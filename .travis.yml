@@ -1,3 +1,3 @@
 language: node_js
-before_install: npm install -g babel-node
+before_install: npm install -g babel-cli
 install: npm install
