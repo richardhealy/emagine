@@ -5,13 +5,17 @@ ES6 Babel Boilerplate with Jasmine, JSHint &amp; Travis
 *To set up*
 
 ```
-npm babel-cli 
 npm install
+npm babel-cli 
 ```
 
 *To run build*
 
-`npm build`
+`npm run build`
+
+*To run tests*
+
+`npm run test`
 
 This will:
 
