@@ -10,8 +10,7 @@ describe("App", function() {
 		});
 
   		it("expect application to start after initialization", function() {
-  			//expect(app.start).toHaveBeenCalled();
-  			 expect(true).toBe(false);
+  			expect(app.start).toHaveBeenCalled();
     	});
   	});
 });
