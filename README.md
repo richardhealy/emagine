@@ -1,6 +1,6 @@
-# es6-jasmine-boilerplate
+# ES6 Phaser + Mocha tests
 
-ES6 Babel Boilerplate with Jasmine, JSHint &amp; Travis
+ES6 Boilerplate with Phaser, Mocha &amp; Babel
 
 *To set up*
 
@@ -19,5 +19,5 @@ npm babel-cli
 
 This will:
 
- - run jasmine tests in spec
+ - run mocha tests in spec
  - build es6 -> common using babel
