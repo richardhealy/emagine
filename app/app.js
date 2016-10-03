@@ -1,12 +1,11 @@
-import say from './say';
+import Game from './Game';
 
-// app.js
-const app = {
+var app = {
 	initialize: function () {
 		this.start();
 	},
 	start: function () {
-		say.hello();	
+		this.game = Game.initialize(500, 500);
 	}
 };
 

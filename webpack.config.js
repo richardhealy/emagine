@@ -1,6 +1,6 @@
 module.exports = {
+  target:'web',
   entry: [
-    'babel-polyfill',
     './app/bootstrap.js'
   ],
   output: {
@@ -17,12 +17,16 @@ module.exports = {
         loader: 'babel-loader',
         query:
         {
-          presets:['es2015']
+          "presets": ["es2015"]
         }
+      },
+      {
+        loader: 'script',
+        test: /(pixi|phaser).js/
       }
     ]
   },
   resolve: {
-    extensions: ['', '.js', '.es6'],
+    extensions: ['', '.js']
   },
 };

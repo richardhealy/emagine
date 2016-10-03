@@ -7,16 +7,14 @@
   "browser": true,
   "node": true,
   "globals": {
-    "jasmine": false,
-    "spyOn": false,
+    "require": false,
+    "mocha": false,
     "describe": false,
-    "beforeEach": false,
-    "afterEach": false,
+    "before": false,
+    "after": false,
     "expect": false,
     "it": false,
-    "xit": false,
-    "setFixtures": false,
-    "alert": false,
-    "import": false
+    "import": false,
+    "phaser":false
   }
 }
