@@ -8,7 +8,7 @@ const RainbowText = {};
 
 const GameState = proxyquire('../../app/states/GameState', {
 	'../objects/RainbowText': RainbowText,
-	'phaser-shim': PhaserMock
+	'./../../helpers/shims/Phaser': PhaserMock
 }).default;
 
 RainbowText.initialize = function () {

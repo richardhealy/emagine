@@ -1,4 +1,4 @@
-import Phaser from 'phaser-shim';
+import Phaser from '<shims>/Phaser';
 import GameState from './states/GameState';
 
 const Game = {

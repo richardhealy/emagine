@@ -1,4 +1,4 @@
-import Phaser from 'phaser-shim';
+import Phaser from '<shims>/Phaser';
 import RainbowText from '../objects/RainbowText';
 
 var GameState = {

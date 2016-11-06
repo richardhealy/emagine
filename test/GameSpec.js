@@ -8,7 +8,7 @@ const GameStateStub = {};
 
 const Game = proxyquire('../app/Game', {
 	'./states/GameState': GameStateStub,
-	'phaser-shim': PhaserMock
+	'./../helpers/shims/Phaser': PhaserMock
 }).default;
 
 GameStateStub.initialize = function () {

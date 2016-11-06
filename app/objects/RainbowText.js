@@ -1,4 +1,4 @@
-import Phaser from 'phaser-shim';
+import Phaser from '<shims>/Phaser';
 
 const RainbowText = {
 	initialize: function (game, x, y, message) {
