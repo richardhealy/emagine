@@ -8,11 +8,14 @@ ES6 Boilerplate with Phaser, Mocha &amp; Babel
 npm install
 npm install babel-cli 
 npm install babel-loader
+npm run build-init // racks up phaser in dist dirs
 ```
 
 *To run build*
 
-`npm run build`
+```
+npm run build
+```
 
 *To run tests*
 
