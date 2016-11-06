@@ -5,7 +5,7 @@ var app = {
 		this.start();
 	},
 	start: function () {
-		this.game = Game.initialize(500, 500);
+		this.game = Game.initialize('100', '100');
 	}
 };
 

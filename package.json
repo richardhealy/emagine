@@ -18,6 +18,8 @@
     "karma-jasmine": "^1.0.2",
     "mocha": "^3.0.2",
     "mockery": "^1.7.0",
+    "node-sass": "^3.11.2",
+    "nodemon": "^1.11.0",
     "phaser-mock": "git+https://github.com/richardhealy/phaser-mock.git",
     "proxyquire": "^1.7.10",
     "proxyquireify": "^3.2.1",
@@ -27,7 +29,12 @@
   },
   "scripts": {
     "test": "./node_modules/.bin/jshint . && ./node_modules/.bin/jsxhint . && babel-node --presets es2015 ./node_modules/.bin/_mocha $(find test -name '*.js')",
-    "build": "webpack",
+    "build": "webpack && npm run build-css",
+    "build-js": "webpack",
+    "build-css": "node-sass --include-path assets/sass assets/sass/main.scss dist/css/main.css",
+    "watch-css": "nodemon -e scss -x \"npm run build-css\"",
+    "watch-js": "nodemon -e js -x \"npm run test && npm run build-js\"",
+    "watch": "npm run watch-js && npm run watch-css",
     "prebuild": "npm run test"
   },
   "dependencies": {
