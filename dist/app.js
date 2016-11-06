@@ -110,9 +110,12 @@
 	
 	var Game = {
 		initialize: function initialize(width, height) {
+			var engine = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _phaserShim2.default.AUTO;
+			var callbacks = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+	
 			var game = {};
 	
-			game.phaserGame = new _phaserShim2.default.Game(width, height, _phaserShim2.default.AUTO, 'content');
+			game.phaserGame = new _phaserShim2.default.Game(width, height, engine, 'content', callbacks);
 			game.phaserGame.state.add('GameState', _GameState2.default.initialize(), false);
 			game.phaserGame.state.start('GameState');
 	
