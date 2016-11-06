@@ -6,7 +6,8 @@ ES6 Boilerplate with Phaser, Mocha &amp; Babel
 
 ```
 npm install
-npm babel-cli 
+npm install babel-cli 
+npm install babel-loader
 ```
 
 *To run build*
