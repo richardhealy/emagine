@@ -27,6 +27,7 @@ GameStateStub.initialize = function () {
 }
 
 describe('Game', function() {
+
   describe('on load', function() {
 
   	it('the game should been initialized with a state', function() {

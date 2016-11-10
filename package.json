@@ -1,7 +1,7 @@
 {
   "name": "test",
   "version": "1.0.0",
-  "description": "",
+  "description": "ES6 Boilerplate with Phaser, Mocha &amp; Babel",
   "devDependencies": {
     "babel-cli": "^6.14.0",
     "babel-loader": "6.2.7",
@@ -46,10 +46,9 @@
     "webpack-node-externals": "^1.4.3"
   },
   "scripts": {
-    "test": "./node_modules/.bin/jshint . && ./node_modules/.bin/jsxhint . && babel-node --presets es2015 ./node_modules/.bin/_mocha $(find test -name '*.js')",
+    "test": "jshint . && ./node_modules/.bin/jsxhint . && babel-node --presets es2015 ./node_modules/.bin/_mocha $(find test -name '*.js')",
     "build-phaser": "cd node_modules/phaser-shim && npm install && cd node_modules/phaser && grunt custom --exclude p2,creature,ninja --split true && cd ../../ && npm run build && gulp build",
-    "build-phaser-plugins": "cd node_modules/phaser-arcade-slopes && gulp build",
-    "build-init": "npm run build-phaser && npm run build-phaser-plugins && gulp build",
+    "build-init": "npm run build-phaser && gulp build",
     "build": "webpack && npm run build-css",
     "build-no-test": "webpack",
     "build-js": "webpack",
@@ -62,5 +61,19 @@
   "dependencies": {
     "babel-polyfill": "^6.13.0",
     "babel-runtime": "^6.11.6"
-  }
+  },
+  "main": "gulpfile.js",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/richardhealy/emagine.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/richardhealy/emagine/issues"
+  },
+  "homepage": "https://github.com/richardhealy/emagine#readme"
 }
