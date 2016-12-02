@@ -7,8 +7,18 @@ const GameStub = {initialize: function () {
   return state;
 }};
 
+const ScaleStub = {
+	getGameLandscapeDimensions: function () {
+		return {
+			x:800,
+			y:600
+		};
+	}
+}
+
 const app = proxyquire('../app/app', {
-	'./Game': GameStub
+	'./Game': GameStub,
+	'./Scale': ScaleStub
 }).default;
 
 describe('App', function() {

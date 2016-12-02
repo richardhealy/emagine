@@ -1,3 +1,4 @@
+import Scale from './Scale';
 import Game from './Game';
 
 var app = {
@@ -5,7 +6,10 @@ var app = {
 		this.start();
 	},
 	start: function () {
-		this.game = Game.initialize('100', '100');
+
+		let dim = Scale.getGameLandscapeDimensions(3200, 640);
+
+		this.game = Game.initialize(dim.w, dim.h);
 	}
 };
 
