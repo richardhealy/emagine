@@ -1,14 +1,14 @@
 import chai from 'chai';
-import PhaserMock from 'phaser-mock';
+import PhaserNoBrowser from './../helpers/shims/PhaserNoBrowser';
 
 const expect =  chai.expect;
 const proxyquire =  require('proxyquire').noCallThru();
-
+const noop = function() {};
 const GameStateStub = {};
 
 const Game = proxyquire('../app/Game', {
 	'./states/GameState': GameStateStub,
-	'./../helpers/shims/Phaser': PhaserMock
+  './../helpers/shims/Phaser': PhaserNoBrowser
 }).default;
 
 GameStateStub.initialize = function () {
@@ -32,7 +32,7 @@ describe('Game', function() {
 
   	it('the game should been initialized with a state', function() {
 
-  	  let game = Game.initialize(500, 500);
+  	  let game = Game.initialize(500, 500, Phaser.AUTO, {preload:noop});
 
       expect(game).to.be.a('object');
 
