@@ -4842,9 +4842,17 @@
 	
 	var _Features2 = _interopRequireDefault(_Features);
 	
-	var _Stages = __webpack_require__(17);
+	var _Stage = __webpack_require__(17);
 	
-	var _Stages2 = _interopRequireDefault(_Stages);
+	var _Stage2 = _interopRequireDefault(_Stage);
+	
+	var _Player = __webpack_require__(19);
+	
+	var _Player2 = _interopRequireDefault(_Player);
+	
+	var _Explosion = __webpack_require__(20);
+	
+	var _Explosion2 = _interopRequireDefault(_Explosion);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -4857,16 +4865,9 @@
 			state.create = this.create;
 			state.update = this.update;
 			state.setup = this.setup;
-			state.generateTunnel = this.generateTunnel;
-			state.useStage = this.useStage;
-			state.createRock = this.createRock;
-			state.switchCeiling = this.switchCeiling;
-			state.switchFloor = this.switchFloor;
 			state.increaseSpeed = this.increaseSpeed;
 			state.death = this.death;
-			state.getExplosion = this.getExplosion;
 			state.updateScore = this.updateScore;
-			state.generatePreBuffers = this.generatePreBuffers;
 			state.fadeComplete = this.fadeComplete;
 			state.setUpFlash = this.setUpFlash;
 			state.deathFlashComplete = this.deathFlashComplete;
@@ -4890,23 +4891,12 @@
 		},
 		create: function create(game) {
 	
-			// Background
-			this.bg = game.add.tileSprite(0, 0, game.width, game.height, 'bg');
-			this.bg.fixedToCamera = true;
+			var stage = _Stage2.default.create(game, _Phaser2.default.Physics.ARCADE, 'bg');
 	
-			this.player = game.add.sprite(0, 0, 'ship');
+			this.bg = stage.bgImage;
+			this.tunnel = stage.tunnel;
 	
-			// Enable physics for the player
-			game.physics.arcade.enable(this.player);
-	
-			this.player.body.collideWorldBounds = true;
-	
-			this.tunnel = game.add.group();
-			this.tunnel.enableBody = true;
-			this.tunnel.physicsBodyType = _Phaser2.default.Physics.ARCADE;
-	
-			// Position the player
-			this.player.position.set(140, 280);
+			this.player = _Player2.default.create(game, 'ship', 140, 280);
 	
 			// Map some keys for use in our update() loop
 			game.controls = game.input.keyboard.addKeys({
@@ -4960,7 +4950,7 @@
 			}
 	
 			// Move bg
-			this.bg.tilePosition.x -= 0.75 + parseFloat(_Features2.default.speed / 20);
+			_Stage2.default.moveBackground(this.bg, _Features2.default.bgSpeed + parseFloat(_Features2.default.speed / 20));
 	
 			// Check the collisions
 			game.physics.arcade.collide(this.player, this.tunnel, function () {
@@ -4998,138 +4988,12 @@
 			var i = 0;
 	
 			for (i = 0; i < _Features2.default.spritesPerRowPlusBuffer; i++) {
-				this.createRock(parseInt(i * _Features2.default.rockWidth, 10), _Features2.default.ceiling[i] * 24 - _Features2.default.rockHeight, this.switchCeiling, game);
+				_Stage2.default.createRock(game, this.tunnel, parseInt(i * _Features2.default.rockWidth, 10), _Features2.default.ceiling[i] * 24 - _Features2.default.rockHeight, _Stage2.default.switchCeiling, this, _Features2.default);
 			}
 	
 			for (i = 0; i < _Features2.default.spritesPerRowPlusBuffer; i++) {
-				this.createRock(parseInt(i * _Features2.default.rockWidth, 10), game.height - (_Features2.default.ceiling[i] + 1) * 24, this.switchFloor, game);
+				_Stage2.default.createRock(game, this.tunnel, parseInt(i * _Features2.default.rockWidth, 10), game.height - (_Features2.default.ceiling[i] + 1) * 24, _Stage2.default.switchFloor, this, _Features2.default);
 			}
-		},
-		generateTunnel: function generateTunnel(game) {
-			var lastCeiling = _Features2.default.ceiling[_Features2.default.ceiling.length - 1],
-			    lastFloor = _Features2.default.floor[_Features2.default.floor.length - 1],
-			    heightCeiling = 1,
-			    heightFloor = 1,
-			    firstTemp = null;
-	
-			firstTemp = _Features2.default.ceiling.shift();
-			firstTemp = _Features2.default.floor.shift();
-	
-			if (_Features2.default.bufferCeiling.length > 0) {
-				heightCeiling = _Features2.default.bufferCeiling.shift();
-			} else {
-				heightCeiling = game.rnd.integerInRange(Math.max(1, lastCeiling - 1), Math.min(lastCeiling + 1, _Features2.default.maxHeight));
-			}
-	
-			if (_Features2.default.bufferFloor.length > 0) {
-				heightFloor = _Features2.default.bufferFloor.shift();
-			} else {
-				heightFloor = game.rnd.integerInRange(Math.max(1, lastFloor - 1), Math.min(lastFloor + 1, _Features2.default.maxHeight));
-			}
-	
-			while (heightCeiling + heightFloor > 19) {
-				heightCeiling = heightCeiling - 1;
-				heightFloor = heightFloor - 1;
-			}
-	
-			_Features2.default.ceiling.push(heightCeiling);
-			_Features2.default.floor.push(heightFloor);
-		},
-	
-		useStage: function useStage(game) {
-	
-			var ceiling = [],
-			    floor = [],
-			    preBuffers = null,
-			    stagePosition = game.rnd.integerInRange(0, _Stages2.default.count - 1);
-	
-			preBuffers = this.generatePreBuffers();
-	
-			Array.prototype.push.apply(ceiling, preBuffers.ceiling);
-			Array.prototype.push.apply(floor, preBuffers.floor);
-	
-			Array.prototype.push.apply(ceiling, _Stages2.default[stagePosition].ceiling);
-			Array.prototype.push.apply(floor, _Stages2.default[stagePosition].floor);
-	
-			_Features2.default.bufferCeiling = ceiling;
-			_Features2.default.bufferFloor = floor;
-		},
-		generatePreBuffers: function generatePreBuffers() {
-			var buffer = {
-				"ceiling": [],
-				"floor": []
-			},
-			    lastCeilingPosition = 1,
-			    lastFloorPosition = 1,
-			    ceilingSteps = 1,
-			    floorSteps = 1,
-			    equalizerSteps = 0;
-	
-			ceilingSteps = lastCeilingPosition = _Features2.default.ceiling[_Features2.default.ceiling.length - 1];
-			floorSteps = lastFloorPosition = _Features2.default.floor[_Features2.default.floor.length - 1];
-	
-			while (lastCeilingPosition > 1) {
-				buffer.ceiling.push(lastCeilingPosition);
-				lastCeilingPosition--;
-			}
-	
-			while (lastFloorPosition > 1) {
-				buffer.floor.push(lastFloorPosition);
-				lastFloorPosition--;
-			}
-	
-			if (ceilingSteps > floorSteps) {
-	
-				equalizerSteps = ceilingSteps - floorSteps;
-	
-				while (equalizerSteps > 1) {
-					buffer.floor.push(1);
-					equalizerSteps--;
-				}
-			} else if (ceilingSteps < floorSteps) {
-	
-				equalizerSteps = floorSteps - ceilingSteps;
-	
-				while (equalizerSteps > 1) {
-					buffer.ceiling.push(1);
-					equalizerSteps--;
-				}
-			}
-	
-			return buffer;
-		},
-		createRock: function createRock(x, y, callback, game) {
-			var self = this,
-			    rock = this.tunnel.create(x, y, 'rock');
-	
-			rock.checkWorldBounds = true;
-			rock.events.onOutOfBounds.add(callback, self, 0, game);
-		},
-		switchCeiling: function switchCeiling(rock, game) {
-			var lastCeiling = null,
-			    useStage = game.rnd.integerInRange(0, _Features2.default.usedStageRandomness);
-	
-			if (_Features2.default.bufferCeiling.length === 0 && useStage > _Features2.default.usedStageRandomness - 10) {
-	
-				this.useStage(game);
-			}
-	
-			lastCeiling = _Features2.default.ceiling[_Features2.default.ceiling.length - 1];
-	
-			this.generateTunnel(game);
-	
-			rock.x = _Features2.default.rockWidth * _Features2.default.spritesPerRowPlusBuffer + rock.x;
-			rock.y = lastCeiling * 24 - _Features2.default.rockHeight;
-		},
-		switchFloor: function switchFloor(rock, game) {
-	
-			var lastFloor = null;
-	
-			// Generation is handled in switchCeiling
-			lastFloor = _Features2.default.floor[_Features2.default.floor.length - 1];
-	
-			rock.x = _Features2.default.rockWidth * _Features2.default.spritesPerRowPlusBuffer + rock.x;
-			rock.y = game.height - (lastFloor + 1) * 24;
 		},
 		increaseSpeed: function increaseSpeed() {
 			_Features2.default.speed = _Features2.default.speed + 1;
@@ -5143,13 +5007,16 @@
 			}
 	
 			game.time.events.removeAll();
+	
 			this.flashTimer = null;
 	
 			this.dead = true;
 			this.boom.play();
 			this.camera.flash(0xff0000, 200);
 			this.bgmusic.fadeOut(2500);
-			this.explosion = this.getExplosion(game, this.player.x, this.player.y);
+	
+			_Explosion2.default.create(game, this.player.x + this.player.body.width, this.player.y);
+	
 			this.deathParticles.x = this.player.x + this.player.body.halfWidth;
 			this.deathParticles.y = this.player.y + this.player.body.halfHeight;
 			this.deathParticles.start(true, 2000, null, 10);
@@ -5205,27 +5072,6 @@
 	
 			game.time.events.add(game.rnd.integerInRange(1000, 45000), this.setUpFlash, this, game);
 		},
-	
-		getExplosion: function getExplosion(game, x, y) {
-	
-			var explosion = null,
-			    animation = null;
-	
-			explosion = game.add.sprite(0, 0, 'explosion');
-			explosion.anchor.setTo(0.5, 0.5);
-	
-			animation = explosion.animations.add('boom', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 100, false);
-			animation.killOnComplete = true;
-	
-			explosion.x = x;
-			explosion.y = y;
-	
-			explosion.angle = game.rnd.integerInRange(0, 360);
-	
-			explosion.animations.play('boom');
-	
-			return explosion;
-		},
 		updateScore: function updateScore() {
 	
 			if (this.dead === true) {
@@ -5258,6 +5104,7 @@
 	   rockHeight: 500,
 	   spritesPerRowPlusBuffer: 38,
 	   usedStageRandomness: 1000,
+	   bgSpeed: 0.75,
 	   bufferCeiling: [],
 	   bufferFloor: [],
 	   ceiling: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 1, 1, 1, 1],
@@ -5268,6 +5115,199 @@
 
 /***/ },
 /* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _Stages = __webpack_require__(18);
+	
+	var _Stages2 = _interopRequireDefault(_Stages);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var Stage = {
+		create: function create(game, engine, bgImageName) {
+	
+			var bgImage = null,
+			    tunnel = null;
+	
+			bgImage = game.add.tileSprite(0, 0, game.width, game.height, bgImageName);
+			bgImage.fixedToCamera = true;
+	
+			tunnel = game.add.group();
+			tunnel.enableBody = true;
+			tunnel.physicsBodyType = engine;
+	
+			return {
+				bgImage: bgImage,
+				tunnel: tunnel
+			};
+		},
+	
+		moveBackground: function moveBackground(stage, position) {
+	
+			stage.tilePosition.x -= position;
+		},
+	
+		generateTunnel: function generateTunnel(game, options) {
+	
+			var lastCeiling = options.ceiling[options.ceiling.length - 1],
+			    lastFloor = options.floor[options.floor.length - 1],
+			    heightCeiling = 1,
+			    heightFloor = 1,
+			    firstTemp = null,
+			    ceiling = options.ceiling,
+			    floor = options.floor;
+	
+			firstTemp = ceiling.shift();
+			firstTemp = floor.shift();
+	
+			if (options.bufferCeiling.length > 0) {
+				heightCeiling = options.bufferCeiling.shift();
+			} else {
+				heightCeiling = game.rnd.integerInRange(Math.max(1, lastCeiling - 1), Math.min(lastCeiling + 1, options.maxHeight));
+			}
+	
+			if (options.bufferFloor.length > 0) {
+				heightFloor = options.bufferFloor.shift();
+			} else {
+				heightFloor = game.rnd.integerInRange(Math.max(1, lastFloor - 1), Math.min(lastFloor + 1, options.maxHeight));
+			}
+	
+			while (heightCeiling + heightFloor > 19) {
+				heightCeiling = heightCeiling - 1;
+				heightFloor = heightFloor - 1;
+			}
+	
+			ceiling.push(heightCeiling);
+			floor.push(heightFloor);
+	
+			return {
+				ceiling: ceiling,
+				floor: floor
+			};
+		},
+	
+	
+		generatePreBuffers: function generatePreBuffers(options) {
+			var buffer = {
+				"ceiling": [],
+				"floor": []
+			},
+			    lastCeilingPosition = 1,
+			    lastFloorPosition = 1,
+			    ceilingSteps = 1,
+			    floorSteps = 1,
+			    equalizerSteps = 0;
+	
+			ceilingSteps = lastCeilingPosition = options.ceiling[options.ceiling.length - 1];
+			floorSteps = lastFloorPosition = options.floor[options.floor.length - 1];
+	
+			while (lastCeilingPosition > 1) {
+				buffer.ceiling.push(lastCeilingPosition);
+				lastCeilingPosition--;
+			}
+	
+			while (lastFloorPosition > 1) {
+				buffer.floor.push(lastFloorPosition);
+				lastFloorPosition--;
+			}
+	
+			if (ceilingSteps > floorSteps) {
+	
+				equalizerSteps = ceilingSteps - floorSteps;
+	
+				while (equalizerSteps > 1) {
+					buffer.floor.push(1);
+					equalizerSteps--;
+				}
+			} else if (ceilingSteps < floorSteps) {
+	
+				equalizerSteps = floorSteps - ceilingSteps;
+	
+				while (equalizerSteps > 1) {
+					buffer.ceiling.push(1);
+					equalizerSteps--;
+				}
+			}
+	
+			return buffer;
+		},
+	
+		useStage: function useStage(game, options) {
+	
+			var buffer = {
+				ceiling: ceiling
+			},
+			    ceiling = [],
+			    floor = [],
+			    preBuffers = null,
+			    stagePosition = game.rnd.integerInRange(0, _Stages2.default.count - 1);
+	
+			preBuffers = this.generatePreBuffers(options);
+	
+			Array.prototype.push.apply(ceiling, preBuffers.ceiling);
+			Array.prototype.push.apply(floor, preBuffers.floor);
+	
+			Array.prototype.push.apply(ceiling, _Stages2.default[stagePosition].ceiling);
+			Array.prototype.push.apply(floor, _Stages2.default[stagePosition].floor);
+	
+			return {
+				ceiling: ceiling,
+				floor: floor
+			};
+		},
+	
+		createRock: function createRock(game, tunnelGroup, x, y, callback, scope, options) {
+	
+			var rock = tunnelGroup.create(x, y, 'rock');
+	
+			rock.checkWorldBounds = true;
+			rock.events.onOutOfBounds.add(callback, scope, 0, game, options);
+		},
+		switchCeiling: function switchCeiling(rock, game, options) {
+			var bufferResults = null,
+			    lastCeiling = null,
+			    useStage = game.rnd.integerInRange(0, options.usedStageRandomness),
+			    generatedTunnel = {};
+	
+			if (options.bufferCeiling.length === 0 && useStage > options.usedStageRandomness - 10) {
+	
+				bufferResults = Stage.useStage(game, options);
+				options.bufferCeiling = bufferResults.ceiling;
+				options.bufferFloor = bufferResults.floor;
+			}
+	
+			lastCeiling = options.ceiling[options.ceiling.length - 1];
+	
+			generatedTunnel = Stage.generateTunnel(game, options);
+			options.ceiling = generatedTunnel.ceiling;
+			options.floor = generatedTunnel.floor;
+	
+			rock.x = options.rockWidth * options.spritesPerRowPlusBuffer + rock.x;
+			rock.y = lastCeiling * 24 - options.rockHeight;
+		},
+		switchFloor: function switchFloor(rock, game, options) {
+	
+			var lastFloor = null;
+	
+			// Generation is handled in switchCeiling
+	
+			lastFloor = options.floor[options.floor.length - 1];
+	
+			rock.x = options.rockWidth * options.spritesPerRowPlusBuffer + rock.x;
+			rock.y = game.height - (lastFloor + 1) * 24;
+		}
+	};
+	
+	exports.default = Stage;
+
+/***/ },
+/* 18 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -5324,6 +5364,73 @@
 	};
 	
 	exports.default = Stages;
+
+/***/ },
+/* 19 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	var Player = {
+		create: function create(game, playerImageName, intX, intY) {
+	
+			var player = null;
+	
+			player = game.add.sprite(0, 0, playerImageName);
+	
+			// Enable physics for the player
+			game.physics.arcade.enable(player);
+	
+			player.body.collideWorldBounds = true;
+	
+			// Position the player
+			player.position.set(intX, intY);
+	
+			return player;
+		}
+	};
+	
+	exports.default = Player;
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	var Explosion = {
+		create: function create(game, x, y) {
+			var imageName = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'boom';
+			var frames = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+	
+	
+			var explosion = null,
+			    animation = null;
+	
+			explosion = game.add.sprite(0, 0, 'explosion');
+			explosion.anchor.setTo(0.5, 0.5);
+	
+			animation = explosion.animations.add(imageName, frames, 10, false);
+			animation.killOnComplete = true;
+	
+			explosion.x = x;
+			explosion.y = y;
+	
+			explosion.angle = game.rnd.integerInRange(60, 120);
+	
+			explosion.animations.play(imageName);
+	
+			return explosion;
+		}
+	};
+	
+	exports.default = Explosion;
 
 /***/ }
 /******/ ]);
