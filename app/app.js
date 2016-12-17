@@ -1,4 +1,3 @@
-import Scale from './Scale';
 import Game from './Game';
 
 var app = {
@@ -7,9 +6,7 @@ var app = {
 	},
 	start: function () {
 
-		let dim = Scale.getGameLandscapeDimensions(3200, 640);
-
-		this.game = Game.initialize(dim.w, dim.h);
+		this.game = Game.initialize(864, 600);
 	}
 };
 

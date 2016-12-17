@@ -1,7 +1,7 @@
 {
-  "name": "test",
-  "version": "1.0.0",
-  "description": "ES6 Boilerplate with Phaser, Mocha &amp; Babel",
+  "name": "the-escape",
+  "version": "0.1.0",
+  "description": "Phaser.js Ship Escape",
   "devDependencies": {
     "babel-cli": "^6.14.0",
     "babel-loader": "6.2.7",
@@ -66,7 +66,8 @@
     "build-js": "webpack",
     "build-css": "node-sass --include-path assets/sass assets/sass/main.scss dist/css/main.css",
     "watch-css": "nodemon -e scss -x \"npm run build-css\"",
-    "watch-js": "nodemon -e js -x \"npm run test && npm run build-js\"",
+    "watch-js": "nodemon -e js -x \"npm run test\"",
+    "watch-js-build": "nodemon -e js -x \"npm run test && npm run build-js\"",
     "watch": "npm run watch-js && npm run watch-css",
     "prebuild": "npm run test"
   },
@@ -80,12 +81,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/richardhealy/emagine.git"
+    "url": "git+https://github.com/richardhealy/escape.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/richardhealy/emagine/issues"
+    "url": "https://github.com/richardhealy/escape/issues"
   },
-  "homepage": "https://github.com/richardhealy/emagine#readme"
+  "homepage": "https://github.com/richardhealy/escape#readme"
 }

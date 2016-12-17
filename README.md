@@ -26,7 +26,9 @@ This will:
 
 ###Potential Errors
 
-If you see:
+- For some reason, `npm install` doesn't work in node version 7. I rolled back to node v6.9
+
+- If you see:
 
 ```
 Package cairo was not found in the pkg-config search path.

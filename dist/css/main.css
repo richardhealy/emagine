@@ -1,6 +1,22 @@
 /* Emagine CSS */
-html,
-body {
-  padding: 0;
-  margin: 0;
-  background-color: #000; }
+html, body {
+  background-color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-flow: column wrap;
+  height: 100%; }
+
+#game {
+  width: 864px;
+  height: 600px; }
+
+#credits {
+  margin-top: 10px;
+  width: 100%; }
+
+span,
+span a {
+  font-family: serif;
+  font-size: 8px;
+  color: #fff; }
