@@ -24,6 +24,15 @@ var Stage = {
 
 	},
 
+	moveObstacles: function (obsticles, speed) {
+		
+		// move the blocks left.
+	    obsticles.forEach(function(item) {
+	        item.x -= speed;
+	    });
+
+	},
+
 	moveBackground: function (stage, position) {
 
 		stage.tilePosition.x -= position;

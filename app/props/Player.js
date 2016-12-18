@@ -15,6 +15,19 @@ var Player = {
 
 	    return player;
 
+	},
+
+	checkCollision: function (game, player, obsticles, callback) {
+
+	    // Check the collisions
+	    game.physics.arcade.collide(player, obsticles, function () {
+	    	callback();
+	    });
+	},
+
+	kill: function (player) {
+
+	    player.kill();
 	}
 };
 
