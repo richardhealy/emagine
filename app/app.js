@@ -1,4 +1,5 @@
 import Game from './Game';
+//import ZPlat from './../helpers/scale';
 
 var app = {
 	initialize: function () {
@@ -6,7 +7,8 @@ var app = {
 	},
 	start: function () {
 
-		this.game = Game.initialize(864, 600);
+		//ZPlat.dim = ZPlat.getGameLandscapeDimensions(864, 600);
+		this.game = Game.initialize('100%', '100%');
 	}
 };
 

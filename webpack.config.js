@@ -22,11 +22,7 @@ module.exports = {
       },
       {
         loader: 'script',
-        test: /(pixi|phaser).js/
-      },
-      {
-        test: require.resolve("./dist/phaser-arcade-slopes"),
-        loader: "expose?SAT"
+        test: /(pixi|phaser|phaser-input).js/
       }
     ]
   },

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Phaser.js Ship Escape",
   "devDependencies": {
+    "@orange-games/phaser-input": "^2.0.2",
     "babel-cli": "^6.14.0",
     "babel-loader": "6.2.7",
     "babel-plugin-namespaces": "^0.2.4",
@@ -59,7 +60,7 @@
   },
   "scripts": {
     "test": "jshint . && ./node_modules/.bin/jsxhint . && babel-node --presets es2015 ./node_modules/.bin/_mocha $(find test -name '*.js')",
-    "build-phaser": "cd node_modules/phaser-shim && npm install && cd node_modules/phaser && grunt custom --exclude creature,ninja --split true && cd ./../../ && npm run build && gulp build && cd ./../../ && cp -fR ./node_modules/phaser-shim/dist/phaser.js ./dist/phaser.js && cp -fR ./node_modules/phaser-shim/dist/pixi.js ./dist/pixi.js && cp -fR ./node_modules/phaser-shim/node_modules/phaser/build/p2.js ./dist/p2.js",
+    "build-phaser": "cd node_modules && cp -fR ./@orange-games/phaser-input/build/phaser-input.js ./../dist/ && cd .. && cd node_modules/phaser-shim && npm install && cd node_modules/phaser && grunt custom --exclude creature,ninja --split true && cd ./../../ && npm run build && gulp build && cd ./../../ && cp -fR ./node_modules/phaser-shim/dist/phaser.js ./dist/phaser.js && cp -fR ./node_modules/phaser-shim/dist/pixi.js ./dist/pixi.js && cp -fR ./node_modules/phaser-shim/node_modules/phaser/build/p2.js ./dist/p2.js",
     "build-init": "npm run build-phaser && gulp build",
     "build": "webpack && npm run build-css",
     "build-no-test": "webpack",

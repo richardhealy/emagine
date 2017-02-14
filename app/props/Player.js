@@ -1,10 +1,16 @@
 var Player = {
 	create: function (game, playerImageName, intX, intY) {
 
-		let player = null;
+		let player = null,
+	    	staticAnimation = null,
+	    	boostAnimation = null;
 
-		player = game.add.sprite(0, 0, playerImageName);
-
+		player = game.add.sprite(0, 0, 'ship');
+		
+		staticAnimation = player.animations.add('static', [0], 1, false);
+		boostAnimation = player.animations.add('boost', [1, 2], 10, true);
+		boostAnimation.onLoop.add(this.animationLooped, game);
+	    
 	    // Enable physics for the player
 	    game.physics.arcade.enable(player);
 
@@ -28,6 +34,13 @@ var Player = {
 	kill: function (player) {
 
 	    player.kill();
+	},
+
+	animationLooped: function (sprite, animation) {
+
+	    if (animation.loopCount === 2) {
+	        sprite.animations.play('static');
+	    }
 	}
 };
 

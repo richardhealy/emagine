@@ -12,7 +12,7 @@ let PlayMixin = {
 	player: null,
 	explosion: null,
 	dead: false,
-	highscore: localStorage.getItem('escape.highscore'),
+	highscore: null,
 	scoreUI: null,
 	score: 0,
 	deathParticles: null,
@@ -28,11 +28,11 @@ let PlayMixin = {
 		let i = 0;
 
 		for (i = 0; i < Features.spritesPerRowPlusBuffer; i++) {
-	        Stage.createRock(game, this.tunnel, parseInt(i * Features.rockWidth,10), (Features.ceiling[i] * 24) - Features.rockHeight, Stage.switchCeiling, this, Features);
+	        Stage.createRock(game, this.tunnel, parseInt(i * Features.rockWidth,10), (Features.ceiling[i] * 12) - Features.rockHeight, Stage.switchCeiling, this, Features);
 	    }
 
 	    for (i = 0; i < Features.spritesPerRowPlusBuffer; i++) {
-	        Stage.createRock(game, this.tunnel, parseInt(i * Features.rockWidth,10), game.height - ((Features.ceiling[i] + 1) * 24), Stage.switchFloor, this, Features);
+	        Stage.createRock(game, this.tunnel, parseInt(i * Features.rockWidth,10), game.height - ((Features.ceiling[i] + 1) * 12), Stage.switchFloor, this, Features);
 	    }
 	},
 
@@ -40,17 +40,27 @@ let PlayMixin = {
 
 	    Features.speed = Features.speed + 1;
 
+	    this.player.animations.play('boost');
+
 	},
 
-    fadeComplete: function () {
+    fadeComplete: function (game, name) {
+
     	if (this.highscore < this.score) {
+    		
     		this.highscore = this.score;
-    		localStorage.setItem('escape.highscore',this.highscore);
+    		localStorage.setItem('escape.highscore',this.score);
+    	}
+
+    	if (game.topscore < this.score && name.length > 0 &&  name.length <= 3 ) {
+    		
+    		game.topscore = this.score;
+    		Score.setHighscore(name, this.score);
     	}
 
     	this.reset();
 
-		this.state.start('play'); 
+		this.state.start('menu');
 	},
 
 	setUpFlash: function (game) {
@@ -81,8 +91,8 @@ let PlayMixin = {
 		this.tunnel.removeAll();
 
 		Features.speed = 1;
-		Features.ceiling = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,8,8,8,1,1,1,1];
-    	Features.floor = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,8,8,8,1,1,1,1];
+		Features.ceiling = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,10,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
+    	Features.floor = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,10,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
 
 	},
 
@@ -101,7 +111,13 @@ let PlayMixin = {
 	    game.time.events.removeAll();
 
 	    Effects.deathFlash(self, 0xff0000, 200, function () {
-	    	self.deathFlashComplete(game);
+	    	
+	    	if(game.topscore < self.score) {
+	    		self.getHighscoreName(game);
+	    	} else {
+	    		self.deathFlashComplete(game);	
+	    	}
+	    	
 	    });
 
 	    this.sounds.boom.play();
@@ -118,7 +134,7 @@ let PlayMixin = {
 
 		this.camera.onFlashComplete.removeAll();
 
-		game.add.text(game.world.centerX, game.world.centerY, 'You Failed to Escape.\nScore: ' + this.score , {
+		game.add.text(game.width/2, game.height/2, 'You Failed to Escape.\nScore: ' + this.score , {
             fontSize: 34,
             fill: '#ffffff',
             align:'center'
@@ -126,7 +142,43 @@ let PlayMixin = {
 
 		Effects.fade(this, '#000000', 4000);
 
-	    this.camera.onFadeComplete.add(this.fadeComplete, this);
+	    this.camera.onFadeComplete.add(this.fadeComplete, this, 0, game);
+	},
+
+	getHighscoreName: function (game) {
+
+		let text = null,
+			nameInput = null,
+			submitBtn = null,
+			self = this;
+
+		text = game.add.text(game.centerX, game.centerY - 50, 'New Highscore.\nScore: ' + this.score , {
+            fontSize: 34,
+            fill: '#ffffff',
+            align:'center'
+        }).anchor.setTo(0.5, 0.4);
+
+        nameInput = game.add.inputField(355, 310, {
+		    font: '24px Arial',
+		    backgroundColor: '#333333',
+		    fill: '#dddddd',
+		    fontWeight: 'bold',
+		    max: 3,
+		    width: 65,
+		    padding: 20,
+		    borderWidth: 4,
+		    borderColor: '#444444',
+		    borderRadius: 6
+		});
+		
+		submitBtn = game.add.button(470, 312, 'button', function() {
+			
+			self.fadeComplete(game, nameInput.value);
+			
+			nameInput.destroy();
+			submitBtn.destroy();
+
+		}, this, 0, 1, 2);
 	}
 };
 

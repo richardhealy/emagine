@@ -154,14 +154,32 @@ var Stage = {
 		let rock = tunnelGroup.create(x, y, 'rock');
 
 	    rock.checkWorldBounds = true;
+	    rock.body.immovable = true;
+
+	    // If the rock is inWorld, set it to be on stage.
+	    if(rock.inWorld === true) {
+	    	rock.custom = {'onStage':true};
+	    } else {
+	    	rock.custom = {'onStage':false};
+	    }
+	    
 	    rock.events.onOutOfBounds.add(callback, scope, 0, game, options);
+	    rock.events.onEnterBounds.add(function () {
+	    	rock.custom = {'onStage':true};
+	    });
 	},
 
 	switchCeiling(rock, game, options) {
-	    var bufferResults = null,
+
+		var bufferResults = null,
 	    	lastCeiling = null,
 	    	useStage = game.rnd.integerInRange(0, options.usedStageRandomness),
 	    	generatedTunnel = {};
+
+	    // Return because the sprite hasn't entered on stage yet.
+	    if (rock.custom.onStage === false) {
+	    	return;
+	    }
 
 	    if (options.bufferCeiling.length === 0 && useStage > options.usedStageRandomness - 10) {
 
@@ -177,7 +195,11 @@ var Stage = {
 	   	options.floor = generatedTunnel.floor;
 
 	    rock.x = (options.rockWidth * options.spritesPerRowPlusBuffer) + rock.x;
-	    rock.y = (lastCeiling * 24) - options.rockHeight;
+	    rock.y = (lastCeiling * 12) - options.rockHeight;
+
+	    // Set this back to false, when it 
+	    //enters the stage this it will be set to true
+	    rock.custom.onStage = false;
 	},
 
 	switchFloor(rock, game, options) {
@@ -186,10 +208,19 @@ var Stage = {
 
 	    // Generation is handled in switchCeiling
 
+	    // Return because the sprite hasn't entered on stage yet.
+	    if (rock.custom.onStage === false) {
+	    	return;
+	    }
+
 	    lastFloor = options.floor[options.floor.length-1];
 	    
 	    rock.x = (options.rockWidth * options.spritesPerRowPlusBuffer) + rock.x;
-	    rock.y = game.height - ((lastFloor + 1) * 24); 
+	    rock.y = game.height - ((lastFloor + 1) * 12); 
+
+	    // Set this back to false, when it 
+	    //enters the stage this it will be set to true
+	    rock.custom.onStage = false;
 	}
 };
 

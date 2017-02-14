@@ -26,6 +26,9 @@ var Play = {
 
 		let stage = null;
 
+		// Get personal highscore
+		this.highscore = localStorage.getItem('escape.highscore', 0);
+	    
 		// Setup stage
 		stage = Stage.create(game, Phaser.Physics.ARCADE, 'bg');
 
@@ -33,7 +36,7 @@ var Play = {
 		this.tunnel = stage.tunnel;
 
 		// Create player
-		this.player = Player.create(game, 'ship', 140, 280);
+		this.player = Player.create(game, 'ship', 70, game.height/2);
 
 		// Setup ceiling and floor obsticles
 		this.setupObsticles(game);
@@ -42,7 +45,7 @@ var Play = {
 		this.deathParticles = DeathParticles.create(game, this.cache);
 
 		// Setup score UI
-	    this.scoreUI = Score.create(game, this.highscore);
+		this.scoreUI = Score.create(game, this.highscore);
 
 		// Setup controls
 		Controls.create(game);
@@ -66,6 +69,9 @@ var Play = {
 
 			// Make sure we definitely stop the boost sound
 			this.sounds.boost.stop();
+
+			// Check for death particle collisions
+			DeathParticles.checkCollision(game, this.deathParticles, this.tunnel);
 	        return;
 	    }
 
@@ -80,7 +86,6 @@ var Play = {
 		Player.checkCollision(game, this.player, this.tunnel, function () {
 			self.death(game);
 		});
-
 		// Move the rocks left. We do this via the group (very handy indeed!)
 	    Stage.moveObstacles(this.tunnel, Features.speed);
 

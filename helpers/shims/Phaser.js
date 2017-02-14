@@ -2,6 +2,7 @@
 
 require('./../../dist/pixi');
 require('./../../dist/phaser');
-require('./../../dist/phaser-arcade-slopes');
+require('./../../dist/phaser-input');
 
 module.exports = Phaser;
+
