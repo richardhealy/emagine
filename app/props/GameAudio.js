@@ -1,4 +1,4 @@
-let Audio = {
+let GameAudio = {
 	create: function (game) {
 		let sounds = {
 			boom:null,
@@ -17,4 +17,4 @@ let Audio = {
 	}
 };
 
-export default Audio;
+export default GameAudio;

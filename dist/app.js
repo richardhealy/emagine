@@ -132,9 +132,19 @@
 				create: this.create
 			};
 	
-			var game = {};
+	
+			var game = {},
+			    self = this;
 	
 			game.phaserGame = new _Phaser2.default.Game(width, height, engine, 'game', callbacks);
+	
+			game.phaserGame.device.whenReady(function () {
+				if (game.phaserGame.device.cordova || game.phaserGame.device.crosswalk) {
+					if (typeof AdMod !== 'undefined' && AdMob) {
+						self.setupAdMob(game.phaserGame);
+					}
+				}
+			}, game);
 	
 			return game;
 		},
@@ -151,6 +161,35 @@
 			this.game.state.add('menu', _Menu2.default.initialize(), false);
 			this.game.state.add('play', _Play2.default.initialize(), false);
 			this.game.state.start('preload');
+		},
+	
+		setupAdMob: function setupAdMob(game) {
+			var admobSettings = {};
+	
+			if (game.device.android) {
+				admobSettings = {
+					banner: 'ca-app-pub-8061380484378750~9452175826',
+					interstitial: 'ca-app-pub-8061380484378750/3405642220'
+				};
+			} else if (game.device.iOS) {
+				admobSettings = {
+					banner: 'ca-app-pub-8061380484378750~9452175826',
+					interstitial: 'ca-app-pub-8061380484378750/7835841821'
+				};
+			}
+	
+			admod.createBanner({
+				adId: admobSettings.banner,
+				autoShow: false,
+				isTesting: true,
+				overlap: false
+			});
+	
+			admob.prepareInterstitial({
+				adId: admobSettings.interstitial,
+				autoShow: false,
+				isTesting: true
+			});
 		}
 	};
 	
@@ -295,7 +334,8 @@
 	
 			var loadingBar = void 0;
 	
-			loadingBar = this.add.sprite(game.width / 2, game.height / 2, "loader"), loadingBar.anchor.setTo(0.5, 0.5);
+			loadingBar = this.add.sprite(game.width / 2, game.height / 2, "loader");
+			loadingBar.anchor.setTo(0.5, 0.5);
 	
 			game.load.setPreloadSprite(loadingBar);
 	
@@ -363,17 +403,18 @@
 	
 		preload: function preload(game) {
 	
-			var self = this,
-			    titleScreen = null,
+			var titleScreen = null,
 			    logo = null;
 	
-			titleScreen = this.add.sprite(game.width / 2, game.height / 2, "titlescreen"), titleScreen.anchor.setTo(0.5, 0.5);
+			titleScreen = this.add.sprite(game.width / 2, game.height / 2, "titlescreen");
+			titleScreen.anchor.setTo(0.5, 0.5);
 			titleScreen.inputEnabled = true;
 			titleScreen.events.onInputDown.add(function () {
 				game.state.start('play');
 			});
 	
-			logo = this.add.sprite(game.width / 2, game.height - 80, "logo"), logo.anchor.setTo(0.5, 0.5);
+			logo = this.add.sprite(game.width / 2, game.height - 80, "logo");
+			logo.anchor.setTo(0.5, 0.5);
 			logo.inputEnabled = true;
 			logo.events.onInputDown.add(function () {
 				game.state.start('play');
@@ -408,8 +449,6 @@
 	
 		update: function update(game) {
 	
-			var self = this;
-	
 			if (_MenuControls2.default.update(game.controls) === true) {
 				game.state.start('play');
 			}
@@ -420,19 +459,26 @@
 
 /***/ },
 /* 15 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
+	
+	var _Phaser = __webpack_require__(4);
+	
+	var _Phaser2 = _interopRequireDefault(_Phaser);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
 	var MenuControls = {
 		create: function create(game) {
 	
 			// Map some keys for use in our update() loop
 			game.controls = game.input.keyboard.addKeys({
-				'start': Phaser.KeyCode.S
+				'start': _Phaser2.default.KeyCode.S
 			});
 		},
 	
@@ -546,9 +592,9 @@
 	
 	var _DeathParticles2 = _interopRequireDefault(_DeathParticles);
 	
-	var _Audio = __webpack_require__(28);
+	var _GameAudio = __webpack_require__(28);
 	
-	var _Audio2 = _interopRequireDefault(_Audio);
+	var _GameAudio2 = _interopRequireDefault(_GameAudio);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -594,7 +640,7 @@
 			// Setup controls
 			_Controls2.default.create(game);
 	
-			this.sounds = _Audio2.default.create(game);
+			this.sounds = _GameAudio2.default.create(game);
 			this.sounds.bgmusic.play();
 	
 			// Setup game events;
@@ -606,8 +652,7 @@
 		update: function update(game) {
 	
 			var self = this,
-			    playerBody = this.player.body,
-			    controls = this.game.controls;
+			    playerBody = this.player.body;
 	
 			if (this.dead === true) {
 	
@@ -719,10 +764,11 @@
 		player: null,
 		explosion: null,
 		dead: false,
-		highscore: null,
+		highscore: 0,
 		scoreUI: null,
 		score: 0,
 		deathParticles: null,
+		deathCount: 0,
 		sounds: {
 			boom: null,
 			teleport: null,
@@ -752,6 +798,9 @@
 	
 		fadeComplete: function fadeComplete(game, name) {
 	
+			var self = this,
+			    t = null;
+	
 			if (this.highscore < this.score) {
 	
 				this.highscore = this.score;
@@ -764,9 +813,15 @@
 				_Score2.default.setHighscore(name, this.score);
 			}
 	
-			this.reset();
+			t = setTimeout(function () {
+				self.reset();
+				self.state.start('menu');
+			}, 1000);
 	
-			this.state.start('menu');
+			if (this.deathCount % 3 === 0) {
+				// show add after 3 deaths
+				admob.requestInterstitialAd();
+			}
 		},
 	
 		setUpFlash: function setUpFlash(game) {
@@ -811,6 +866,7 @@
 	
 			// Damn, you died!
 			this.dead = true;
+			this.deathCount++;
 	
 			// Remove all game events
 			game.time.events.removeAll();
@@ -856,13 +912,13 @@
 			    submitBtn = null,
 			    self = this;
 	
-			text = game.add.text(game.centerX, game.centerY - 50, 'New Highscore.\nScore: ' + this.score, {
+			text = game.add.text(game.width / 2, game.height / 2 - 115, 'New Highscore\nScore: ' + this.score, {
 				fontSize: 34,
 				fill: '#ffffff',
 				align: 'center'
 			}).anchor.setTo(0.5, 0.4);
 	
-			nameInput = game.add.inputField(355, 310, {
+			nameInput = game.add.inputField(game.width / 2 - 90, game.height / 2 - 50, {
 				font: '24px Arial',
 				backgroundColor: '#333333',
 				fill: '#dddddd',
@@ -875,7 +931,7 @@
 				borderRadius: 6
 			});
 	
-			submitBtn = game.add.button(470, 312, 'button', function () {
+			submitBtn = game.add.button(game.width / 2 + 30, game.height / 2 - 48, 'button', function () {
 	
 				self.fadeComplete(game, nameInput.value);
 	
@@ -1049,10 +1105,7 @@
 	
 		useStage: function useStage(game, options) {
 	
-			var buffer = {
-				ceiling: ceiling
-			},
-			    ceiling = [],
+			var ceiling = [],
 			    floor = [],
 			    preBuffers = null,
 			    stagePosition = game.rnd.integerInRange(0, _Stages2.default.count - 1);
@@ -1392,13 +1445,20 @@
 
 /***/ },
 /* 27 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
+	
+	var _Phaser = __webpack_require__(4);
+	
+	var _Phaser2 = _interopRequireDefault(_Phaser);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
 	var Controls = {
 		create: function create(game) {
 	
@@ -1406,14 +1466,15 @@
 			    up = void 0,
 			    down = void 0;
 	
-			this.upState = false, this.downState = false;
+			this.upState = false;
+			this.downState = false;
 	
 			// Map some keys for use in our update() loop
 			game.controls = game.input.keyboard.addKeys({
-				'upW': Phaser.KeyCode.W,
-				'downS': Phaser.KeyCode.S,
-				'upUP': Phaser.KeyCode.UP,
-				'downDOWN': Phaser.KeyCode.DOWN
+				'upW': _Phaser2.default.KeyCode.W,
+				'downS': _Phaser2.default.KeyCode.S,
+				'upUP': _Phaser2.default.KeyCode.UP,
+				'downDOWN': _Phaser2.default.KeyCode.DOWN
 			});
 	
 			up = game.add.button(game.width - 74, game.height - 142, 'up');
@@ -1473,7 +1534,7 @@
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
-	var Audio = {
+	var GameAudio = {
 		create: function create(game) {
 			var sounds = {
 				boom: null,
@@ -1492,7 +1553,7 @@
 		}
 	};
 	
-	exports.default = Audio;
+	exports.default = GameAudio;
 
 /***/ }
 /******/ ]);

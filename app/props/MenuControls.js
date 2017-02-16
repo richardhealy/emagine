@@ -1,3 +1,5 @@
+import Phaser from '<shims>/Phaser';
+
 let MenuControls = {
 	create: function (game) {
 

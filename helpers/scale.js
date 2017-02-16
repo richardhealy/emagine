@@ -27,7 +27,7 @@ ZPlat.getGameLandscapeDimensions = function(max_w, max_h) {
   return {
     w: landW,
     h: landH
-  }
-}
+  };
+};
 
 module.exports = ZPlat;

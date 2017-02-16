@@ -12,10 +12,11 @@ let PlayMixin = {
 	player: null,
 	explosion: null,
 	dead: false,
-	highscore: null,
+	highscore: 0,
 	scoreUI: null,
 	score: 0,
 	deathParticles: null,
+	deathCount:0,
 	sounds: {
 		boom:null,
 		teleport: null,
@@ -46,6 +47,9 @@ let PlayMixin = {
 
     fadeComplete: function (game, name) {
 
+    	let self = this,
+    		t = null;
+
     	if (this.highscore < this.score) {
     		
     		this.highscore = this.score;
@@ -58,9 +62,15 @@ let PlayMixin = {
     		Score.setHighscore(name, this.score);
     	}
 
-    	this.reset();
 
-		this.state.start('menu');
+    	t = setTimeout(function () {
+    		self.reset();
+			self.state.start('menu');
+    	}, 1000);
+
+    	if ( this.deathCount%3 === 0) { // show add after 3 deaths
+    		admob.requestInterstitialAd();
+    	}
 	},
 
 	setUpFlash: function (game) {
@@ -106,6 +116,7 @@ let PlayMixin = {
 
 	    // Damn, you died!
 	    this.dead = true;
+	    this.deathCount++;
 
 	    // Remove all game events
 	    game.time.events.removeAll();
@@ -125,7 +136,7 @@ let PlayMixin = {
 
 	    Explosion.create(game, this.player.x + this.player.body.width, this.player.y);
 	    
-	    DeathParticles.emit(this.deathParticles, this.player.x + this.player.body.halfWidth, this.player.y + this.player.body.halfHeight)
+	    DeathParticles.emit(this.deathParticles, this.player.x + this.player.body.halfWidth, this.player.y + this.player.body.halfHeight);
 
 	    Player.kill(this.player);
 	},
@@ -152,13 +163,13 @@ let PlayMixin = {
 			submitBtn = null,
 			self = this;
 
-		text = game.add.text(game.centerX, game.centerY - 50, 'New Highscore.\nScore: ' + this.score , {
+		text = game.add.text(game.width/2, (game.height/2)-115, 'New Highscore\nScore: ' + this.score , {
             fontSize: 34,
             fill: '#ffffff',
             align:'center'
         }).anchor.setTo(0.5, 0.4);
 
-        nameInput = game.add.inputField(355, 310, {
+        nameInput = game.add.inputField((game.width/2)-90, (game.height/2)-50, {
 		    font: '24px Arial',
 		    backgroundColor: '#333333',
 		    fill: '#dddddd',
@@ -171,7 +182,7 @@ let PlayMixin = {
 		    borderRadius: 6
 		});
 		
-		submitBtn = game.add.button(470, 312, 'button', function() {
+		submitBtn = game.add.button((game.width/2)+30, (game.height/2)-48, 'button', function() {
 			
 			self.fadeComplete(game, nameInput.value);
 			

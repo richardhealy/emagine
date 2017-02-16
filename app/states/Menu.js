@@ -17,18 +17,17 @@ var Menu = {
 
 	preload: function (game) {
 
-		let self = this,
-			titleScreen = null,
+		let titleScreen = null,
 			logo = null;
 		
-		titleScreen = this.add.sprite(game.width/2, game.height/2, "titlescreen"),
+		titleScreen = this.add.sprite(game.width/2, game.height/2, "titlescreen");
 		titleScreen.anchor.setTo(0.5,0.5);
 		titleScreen.inputEnabled = true;
 		titleScreen.events.onInputDown.add(function () {
 			game.state.start('play');
 		});
 
-		logo = this.add.sprite(game.width/2, game.height-80, "logo"),
+		logo = this.add.sprite(game.width/2, game.height-80, "logo");
 		logo.anchor.setTo(0.5,0.5);
 		logo.inputEnabled = true;
 		logo.events.onInputDown.add(function () {
@@ -63,8 +62,6 @@ var Menu = {
 	},
 
 	update: function (game) {
-
-		let self = this;
 
 		if(MenuControls.update(game.controls) === true) {
 			game.state.start('play');

@@ -15,7 +15,7 @@ var Load = {
 
 		let loadingBar;
 
-		loadingBar = this.add.sprite(game.width/2, game.height/2, "loader"),
+		loadingBar = this.add.sprite(game.width/2, game.height/2, "loader");
 		loadingBar.anchor.setTo(0.5,0.5);
 
         game.load.setPreloadSprite(loadingBar);

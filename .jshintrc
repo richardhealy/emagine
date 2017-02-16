@@ -15,6 +15,7 @@
     "expect": false,
     "it": false,
     "import": false,
-    "phaser":false
+    "phaser":false,
+    "AdMob": false
   }
 }

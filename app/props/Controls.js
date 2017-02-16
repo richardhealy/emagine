@@ -1,10 +1,12 @@
+import Phaser from '<shims>/Phaser';
+
 let Controls = {
 	create: function (game) {
 		
 		let self = this,
 			up, down;
 		
-		this.upState = false, 
+		this.upState = false; 
 		this.downState = false;
 
 		// Map some keys for use in our update() loop

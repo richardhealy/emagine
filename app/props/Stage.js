@@ -75,7 +75,7 @@ var Stage = {
 	    return {
 	    	ceiling:ceiling,
 	    	floor:floor
-	    }
+	    };
 	},
 
 	generatePreBuffers: function (options) {
@@ -127,10 +127,7 @@ var Stage = {
 
 	useStage: function (game, options) {
 
-		let buffer = {
-				ceiling
-			},
-			ceiling = [],
+		let ceiling = [],
 			floor = [],
 			preBuffers = null,
 			stagePosition = game.rnd.integerInRange(0, Stages.count-1);
@@ -146,7 +143,7 @@ var Stage = {
 		return {
 			ceiling:ceiling,
 			floor:floor
-		}
+		};
 	},
 
 	createRock(game, tunnelGroup, x, y, callback, scope, options) {

@@ -6,7 +6,7 @@ import Player from '../props/Player';
 import Score from '../props/Score';
 import Controls from '../props/Controls';
 import DeathParticles from '../props/DeathParticles';
-import Audio from '../props/Audio';
+import GameAudio from '../props/GameAudio';
 
 var Play = {
 	initialize: function () {
@@ -50,7 +50,7 @@ var Play = {
 		// Setup controls
 		Controls.create(game);
 
-		this.sounds = Audio.create(game);
+		this.sounds = GameAudio.create(game);
 		this.sounds.bgmusic.play();
 
 		// Setup game events;
@@ -62,8 +62,7 @@ var Play = {
 	update: function (game) {
 
 		var self = this,
-			playerBody = this.player.body,
-			controls = this.game.controls;
+			playerBody = this.player.body;
 
 		if (this.dead === true) {
 
