@@ -63,13 +63,18 @@ let PlayMixin = {
     	}
 
 
-    	t = setTimeout(function () {
-    		self.reset();
-			self.state.start('menu');
-    	}, 1000);
-
     	if ( this.deathCount%3 === 0) { // show add after 3 deaths
+
     		admob.requestInterstitialAd();
+
+			t = setTimeout(function () {
+	    		self.reset();
+				self.state.start('menu');
+	    	}, 3000);
+
+    	} else {
+    		this.reset();
+			this.state.start('menu');
     	}
 	},
 
@@ -99,6 +104,9 @@ let PlayMixin = {
 		this.score = 0;
 		this.dead = false;
 		this.tunnel.removeAll();
+		
+    	// Remove all flashes
+    	this.camera.onFlashComplete.removeAll();
 
 		Features.speed = 1;
 		Features.ceiling = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,10,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
@@ -142,8 +150,6 @@ let PlayMixin = {
 	},
 
 	deathFlashComplete: function (game) {
-
-		this.camera.onFlashComplete.removeAll();
 
 		game.add.text(game.width/2, game.height/2, 'You Failed to Escape.\nScore: ' + this.score , {
             fontSize: 34,

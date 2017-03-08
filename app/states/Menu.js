@@ -1,5 +1,4 @@
 import Phaser from '<shims>/Phaser';
-import MenuControls from '../props/MenuControls';
 import Score from '../props/Score';
 
 var Menu = {
@@ -9,7 +8,6 @@ var Menu = {
 
 		state = new Phaser.State();
 		state.preload = this.preload;
-		state.update = this.update;
 		state.createMenuOptions = this.createMenuOptions;
 
 		return state;
@@ -21,7 +19,7 @@ var Menu = {
 			logo = null;
 		
 		titleScreen = this.add.sprite(game.width/2, game.height/2, "titlescreen");
-		titleScreen.anchor.setTo(0.5,0.5);
+		titleScreen.anchor.setTo(0.5,0.4);
 		titleScreen.inputEnabled = true;
 		titleScreen.events.onInputDown.add(function () {
 			game.state.start('play');
@@ -56,16 +54,15 @@ var Menu = {
 
     	game.add.tween(start).to( { alpha: 1 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
 
-		MenuControls.create(game);
+		// Create credits icon
+		game.add.button(game.width-30, game.height-30, 'info', function() {
+			
+			game.state.start('credits');
+
+		}, this);
+
 
 	    return start;
-	},
-
-	update: function (game) {
-
-		if(MenuControls.update(game.controls) === true) {
-			game.state.start('play');
-		}
 	}
 };
 

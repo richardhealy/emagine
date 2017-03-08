@@ -85,7 +85,6 @@
 		},
 		start: function start() {
 	
-			//ZPlat.dim = ZPlat.getGameLandscapeDimensions(864, 600);
 			this.game = _Game2.default.initialize('100%', '100%');
 		}
 	};
@@ -118,9 +117,13 @@
 	
 	var _Menu2 = _interopRequireDefault(_Menu);
 	
-	var _Play = __webpack_require__(17);
+	var _Play = __webpack_require__(16);
 	
 	var _Play2 = _interopRequireDefault(_Play);
+	
+	var _Credits = __webpack_require__(28);
+	
+	var _Credits2 = _interopRequireDefault(_Credits);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -140,7 +143,7 @@
 	
 			game.phaserGame.device.whenReady(function () {
 				if (game.phaserGame.device.cordova || game.phaserGame.device.crosswalk) {
-					if (typeof AdMod !== 'undefined' && AdMob) {
+					if (typeof admob !== 'undefined' && admob) {
 						self.setupAdMob(game.phaserGame);
 					}
 				}
@@ -159,6 +162,7 @@
 			this.game.state.add('preload', _Preload2.default.initialize(), false);
 			this.game.state.add('load', _Load2.default.initialize(), false);
 			this.game.state.add('menu', _Menu2.default.initialize(), false);
+			this.game.state.add('credits', _Credits2.default.initialize(), false);
 			this.game.state.add('play', _Play2.default.initialize(), false);
 			this.game.state.start('preload');
 		},
@@ -178,17 +182,17 @@
 				};
 			}
 	
-			admod.createBanner({
+			admob.createBanner({
 				adId: admobSettings.banner,
 				autoShow: false,
-				isTesting: true,
+				isTesting: false,
 				overlap: false
 			});
 	
 			admob.prepareInterstitial({
 				adId: admobSettings.interstitial,
 				autoShow: false,
-				isTesting: true
+				isTesting: false
 			});
 		}
 	};
@@ -341,13 +345,15 @@
 	
 			game.load.image('bg', './assets/images/bg.png');
 			game.load.spritesheet('rock', './assets/images/block.png', 12, 500);
-			game.load.spritesheet('ship', './assets/images/shipsmall.png', 32, 17, 3);
-			game.load.spritesheet('explosion', './assets/images/explosionsmall.png', 100, 100);
-			game.load.spritesheet('titlescreen', './assets/images/ui/titlenotextmediumlong.png', 1024, 600);
-			game.load.spritesheet('logo', './assets/images/ui/logosmallmedium.png', 700, 131);
+			game.load.spritesheet('ship', './assets/images/ship.png', 40, 22, 3);
+			game.load.spritesheet('explosion', './assets/images/explosion.png', 128, 128);
+			game.load.spritesheet('titlescreen', './assets/images/ui/title.png', 1024, 600);
+			game.load.spritesheet('logo', './assets/images/ui/logo.png', 700, 131);
 			game.load.spritesheet('button', './assets/images/ui/check.png', 64, 64);
-			game.load.spritesheet('up', './assets/images/ui/upsmall.png', 96, 96);
-			game.load.spritesheet('down', './assets/images/ui/downsmall.png', 96, 96);
+			game.load.spritesheet('info', './assets/images/ui/info.png', 24, 24);
+			game.load.spritesheet('close', './assets/images/ui/close.png', 24, 24);
+			game.load.spritesheet('up', './assets/images/ui/up.png', 96, 96);
+			game.load.spritesheet('down', './assets/images/ui/down.png', 96, 96);
 			game.load.audio('bgmusic', './assets/audio/tension.mp3');
 			game.load.audio('boom', './assets/audio/exploding.wav');
 			game.load.audio('teleport', './assets/audio/teleport.wav');
@@ -378,11 +384,7 @@
 	
 	var _Phaser2 = _interopRequireDefault(_Phaser);
 	
-	var _MenuControls = __webpack_require__(15);
-	
-	var _MenuControls2 = _interopRequireDefault(_MenuControls);
-	
-	var _Score = __webpack_require__(16);
+	var _Score = __webpack_require__(15);
 	
 	var _Score2 = _interopRequireDefault(_Score);
 	
@@ -395,7 +397,6 @@
 	
 			state = new _Phaser2.default.State();
 			state.preload = this.preload;
-			state.update = this.update;
 			state.createMenuOptions = this.createMenuOptions;
 	
 			return state;
@@ -407,7 +408,7 @@
 			    logo = null;
 	
 			titleScreen = this.add.sprite(game.width / 2, game.height / 2, "titlescreen");
-			titleScreen.anchor.setTo(0.5, 0.5);
+			titleScreen.anchor.setTo(0.5, 0.4);
 			titleScreen.inputEnabled = true;
 			titleScreen.events.onInputDown.add(function () {
 				game.state.start('play');
@@ -442,16 +443,13 @@
 	
 			game.add.tween(start).to({ alpha: 1 }, 2000, _Phaser2.default.Easing.Linear.None, true, 0, 1000, true);
 	
-			_MenuControls2.default.create(game);
+			// Create credits icon
+			game.add.button(game.width - 30, game.height - 30, 'info', function () {
+	
+				game.state.start('credits');
+			}, this);
 	
 			return start;
-		},
-	
-		update: function update(game) {
-	
-			if (_MenuControls2.default.update(game.controls) === true) {
-				game.state.start('play');
-			}
 		}
 	};
 	
@@ -459,42 +457,6 @@
 
 /***/ },
 /* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _Phaser = __webpack_require__(4);
-	
-	var _Phaser2 = _interopRequireDefault(_Phaser);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var MenuControls = {
-		create: function create(game) {
-	
-			// Map some keys for use in our update() loop
-			game.controls = game.input.keyboard.addKeys({
-				'start': _Phaser2.default.KeyCode.S
-			});
-		},
-	
-		update: function update(controls) {
-			if (controls.start.isDown) {
-				return true;
-			}
-	
-			return false;
-		}
-	};
-	
-	exports.default = MenuControls;
-
-/***/ },
-/* 16 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -551,7 +513,7 @@
 	exports.default = Score;
 
 /***/ },
-/* 17 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -564,35 +526,35 @@
 	
 	var _Phaser2 = _interopRequireDefault(_Phaser);
 	
-	var _GameFactory = __webpack_require__(18);
+	var _GameFactory = __webpack_require__(17);
 	
 	var _GameFactory2 = _interopRequireDefault(_GameFactory);
 	
-	var _Features = __webpack_require__(20);
+	var _Features = __webpack_require__(19);
 	
 	var _Features2 = _interopRequireDefault(_Features);
 	
-	var _Stage = __webpack_require__(21);
+	var _Stage = __webpack_require__(20);
 	
 	var _Stage2 = _interopRequireDefault(_Stage);
 	
-	var _Player = __webpack_require__(23);
+	var _Player = __webpack_require__(22);
 	
 	var _Player2 = _interopRequireDefault(_Player);
 	
-	var _Score = __webpack_require__(16);
+	var _Score = __webpack_require__(15);
 	
 	var _Score2 = _interopRequireDefault(_Score);
 	
-	var _Controls = __webpack_require__(27);
+	var _Controls = __webpack_require__(26);
 	
 	var _Controls2 = _interopRequireDefault(_Controls);
 	
-	var _DeathParticles = __webpack_require__(25);
+	var _DeathParticles = __webpack_require__(24);
 	
 	var _DeathParticles2 = _interopRequireDefault(_DeathParticles);
 	
-	var _GameAudio = __webpack_require__(28);
+	var _GameAudio = __webpack_require__(27);
 	
 	var _GameAudio2 = _interopRequireDefault(_GameAudio);
 	
@@ -617,7 +579,11 @@
 			var stage = null;
 	
 			// Get personal highscore
-			this.highscore = localStorage.getItem('escape.highscore', 0);
+			this.highscore = localStorage.getItem('escape.highscore');
+	
+			if (this.highscore === null) {
+				this.highscore = 0;
+			}
 	
 			// Setup stage
 			stage = _Stage2.default.create(game, _Phaser2.default.Physics.ARCADE, 'bg');
@@ -686,7 +652,7 @@
 	exports.default = Play;
 
 /***/ },
-/* 18 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -695,7 +661,7 @@
 		value: true
 	});
 	
-	var _PlayMixin = __webpack_require__(19);
+	var _PlayMixin = __webpack_require__(18);
 	
 	var _PlayMixin2 = _interopRequireDefault(_PlayMixin);
 	
@@ -719,7 +685,7 @@
 	exports.default = GameFactory;
 
 /***/ },
-/* 19 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -728,31 +694,31 @@
 		value: true
 	});
 	
-	var _Features = __webpack_require__(20);
+	var _Features = __webpack_require__(19);
 	
 	var _Features2 = _interopRequireDefault(_Features);
 	
-	var _Stage = __webpack_require__(21);
+	var _Stage = __webpack_require__(20);
 	
 	var _Stage2 = _interopRequireDefault(_Stage);
 	
-	var _Player = __webpack_require__(23);
+	var _Player = __webpack_require__(22);
 	
 	var _Player2 = _interopRequireDefault(_Player);
 	
-	var _Explosion = __webpack_require__(24);
+	var _Explosion = __webpack_require__(23);
 	
 	var _Explosion2 = _interopRequireDefault(_Explosion);
 	
-	var _Score = __webpack_require__(16);
+	var _Score = __webpack_require__(15);
 	
 	var _Score2 = _interopRequireDefault(_Score);
 	
-	var _DeathParticles = __webpack_require__(25);
+	var _DeathParticles = __webpack_require__(24);
 	
 	var _DeathParticles2 = _interopRequireDefault(_DeathParticles);
 	
-	var _Effects = __webpack_require__(26);
+	var _Effects = __webpack_require__(25);
 	
 	var _Effects2 = _interopRequireDefault(_Effects);
 	
@@ -813,14 +779,18 @@
 				_Score2.default.setHighscore(name, this.score);
 			}
 	
-			t = setTimeout(function () {
-				self.reset();
-				self.state.start('menu');
-			}, 1000);
-	
 			if (this.deathCount % 3 === 0) {
 				// show add after 3 deaths
+	
 				admob.requestInterstitialAd();
+	
+				t = setTimeout(function () {
+					self.reset();
+					self.state.start('menu');
+				}, 3000);
+			} else {
+				this.reset();
+				this.state.start('menu');
 			}
 		},
 	
@@ -850,6 +820,9 @@
 			this.score = 0;
 			this.dead = false;
 			this.tunnel.removeAll();
+	
+			// Remove all flashes
+			this.camera.onFlashComplete.removeAll();
 	
 			_Features2.default.speed = 1;
 			_Features2.default.ceiling = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
@@ -891,8 +864,6 @@
 		},
 	
 		deathFlashComplete: function deathFlashComplete(game) {
-	
-			this.camera.onFlashComplete.removeAll();
 	
 			game.add.text(game.width / 2, game.height / 2, 'You Failed to Escape.\nScore: ' + this.score, {
 				fontSize: 34,
@@ -944,7 +915,7 @@
 	exports.default = PlayMixin;
 
 /***/ },
-/* 20 */
+/* 19 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -971,7 +942,7 @@
 	exports.default = Features;
 
 /***/ },
-/* 21 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -980,7 +951,7 @@
 		value: true
 	});
 	
-	var _Stages = __webpack_require__(22);
+	var _Stages = __webpack_require__(21);
 	
 	var _Stages2 = _interopRequireDefault(_Stages);
 	
@@ -1200,7 +1171,7 @@
 	exports.default = Stage;
 
 /***/ },
-/* 22 */
+/* 21 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1259,7 +1230,7 @@
 	exports.default = Stages;
 
 /***/ },
-/* 23 */
+/* 22 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1315,7 +1286,7 @@
 	exports.default = Player;
 
 /***/ },
-/* 24 */
+/* 23 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1326,7 +1297,7 @@
 	var Explosion = {
 		create: function create(game, x, y) {
 			var imageName = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'boom';
-			var frames = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+			var frames = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [0, 1, 2, 3];
 	
 	
 			var explosion = null,
@@ -1335,7 +1306,7 @@
 			explosion = game.add.sprite(0, 0, 'explosion');
 			explosion.anchor.setTo(0.5, 0.5);
 	
-			animation = explosion.animations.add(imageName, frames, 10, false);
+			animation = explosion.animations.add(imageName, frames, 20, false);
 			animation.killOnComplete = true;
 	
 			explosion.x = x;
@@ -1352,7 +1323,7 @@
 	exports.default = Explosion;
 
 /***/ },
-/* 25 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1408,7 +1379,7 @@
 	exports.default = DeathParticles;
 
 /***/ },
-/* 26 */
+/* 25 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1444,7 +1415,7 @@
 	exports.default = Effects;
 
 /***/ },
-/* 27 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1526,7 +1497,7 @@
 	exports.default = Controls;
 
 /***/ },
-/* 28 */
+/* 27 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1554,6 +1525,55 @@
 	};
 	
 	exports.default = GameAudio;
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _Phaser = __webpack_require__(4);
+	
+	var _Phaser2 = _interopRequireDefault(_Phaser);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var Credits = {
+		initialize: function initialize() {
+	
+			var state = void 0;
+	
+			state = new _Phaser2.default.State();
+			state.preload = this.preload;
+			state.createCredits = this.createCredits;
+	
+			return state;
+		},
+	
+		preload: function preload(game) {
+	
+			this.createCredits(game);
+		},
+	
+		createCredits: function createCredits(game) {
+			var credits = null;
+	
+			credits = game.add.text(game.width / 2, game.height / 2, 'CREDITS\n\nMy D-Bot ❤\nSpecial thanks to Phaser.js\n\nSFX\nTeleport: https://goo.gl/WG6Evd\nExplosion: https://goo.gl/62a9wp\Ship Boost: https://goo.gl/ieWUCI\n\nMusic\nZander Noriaga: https://goo.gl/CF7itr', { font: "12px Courier New", fill: "#ffffff", align: "center" });
+			credits.anchor.setTo(0.5, 0.5);
+	
+			// Create close icon
+			game.add.button(game.width - 30, 5, 'close', function () {
+	
+				game.state.start('menu');
+			}, this);
+		}
+	};
+	
+	exports.default = Credits;
 
 /***/ }
 /******/ ]);

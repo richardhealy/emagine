@@ -3,6 +3,7 @@ import Preload from './states/Preload';
 import Load from './states/Load';
 import Menu from './states/Menu';
 import Play from './states/Play';
+import Credits from './states/Credits';
 
 const Game = {
 	initialize: function (width, height, engine = Phaser.AUTO, callbacks = {
@@ -17,7 +18,7 @@ const Game = {
 		
 		game.phaserGame.device.whenReady(function () {
 			if (game.phaserGame.device.cordova || game.phaserGame.device.crosswalk) {
-				if (typeof AdMod !== 'undefined' && AdMob) {
+				if (typeof admob !== 'undefined' && admob) {
 					self.setupAdMob(game.phaserGame);
 				}
 			}
@@ -37,6 +38,7 @@ const Game = {
 		this.game.state.add('preload', Preload.initialize(), false);
 		this.game.state.add('load', Load.initialize(), false);
 		this.game.state.add('menu', Menu.initialize(), false);
+		this.game.state.add('credits', Credits.initialize(), false);
 		this.game.state.add('play', Play.initialize(), false);
 		this.game.state.start('preload');
 	},
@@ -56,17 +58,17 @@ const Game = {
 			};
 		} 
 
-		admod.createBanner({
+		admob.createBanner({
 			adId:admobSettings.banner,
 			autoShow:false,
-			isTesting:true,
+			isTesting:false,
 			overlap: false
 		}); 
 
 		admob.prepareInterstitial({
 			adId:admobSettings.interstitial,
 			autoShow:false,
-			isTesting:true
+			isTesting:false
 		});
 	}
 };

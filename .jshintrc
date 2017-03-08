@@ -16,6 +16,7 @@
     "it": false,
     "import": false,
     "phaser":false,
-    "AdMob": false
+    "admob": false,
+    "PhaserInput": false 
   }
 }

@@ -27,7 +27,11 @@ var Play = {
 		let stage = null;
 
 		// Get personal highscore
-		this.highscore = localStorage.getItem('escape.highscore', 0);
+		this.highscore = localStorage.getItem('escape.highscore');
+
+		if(this.highscore === null ) {
+			this.highscore = 0;
+		}
 	    
 		// Setup stage
 		stage = Stage.create(game, Phaser.Physics.ARCADE, 'bg');

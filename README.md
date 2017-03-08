@@ -48,3 +48,18 @@ echo $?
 
 http://stackoverflow.com/questions/22100213/package-cairo-was-not-found-in-the-pkg-config-search-path-node-j-s-install-canv
 https://github.com/Automattic/node-canvas/issues/722
+
+
+###BUILD FOR ANDROID
+cd /Users/healy/Code/games/app-escape
+cordova run android --release -- --keystore=shadowhack.jks --storePassword=password --alias=healy --password=password
+open /Users/healy/Code/games/app-escape/platforms/android/build/outputs/apk
+
+#BUILD FOR iOS
+cd /Users/healy/Code/games/app-escape/
+cordova build ios --release
+Open up /Users/healy/Code/games/app-escape/platforms/ios/BaseKit.xcodeproj in XCode
+
+
+
+

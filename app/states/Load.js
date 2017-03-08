@@ -22,13 +22,15 @@ var Load = {
 
 		game.load.image('bg', './assets/images/bg.png');
 		game.load.spritesheet('rock', './assets/images/block.png', 12, 500);
-	    game.load.spritesheet('ship', './assets/images/shipsmall.png', 32, 17, 3);
-	    game.load.spritesheet('explosion', './assets/images/explosionsmall.png', 100, 100);
-	    game.load.spritesheet('titlescreen', './assets/images/ui/titlenotextmediumlong.png', 1024, 600);
-	    game.load.spritesheet('logo', './assets/images/ui/logosmallmedium.png', 700, 131);
+	    game.load.spritesheet('ship', './assets/images/ship.png', 40, 22, 3);
+	    game.load.spritesheet('explosion', './assets/images/explosion.png', 128, 128);
+	    game.load.spritesheet('titlescreen', './assets/images/ui/title.png', 1024, 600);
+	    game.load.spritesheet('logo', './assets/images/ui/logo.png', 700, 131);
 	    game.load.spritesheet('button', './assets/images/ui/check.png', 64, 64);
-	    game.load.spritesheet('up', './assets/images/ui/upsmall.png', 96, 96);
-	    game.load.spritesheet('down', './assets/images/ui/downsmall.png', 96, 96);
+	    game.load.spritesheet('info', './assets/images/ui/info.png', 24, 24);
+	    game.load.spritesheet('close', './assets/images/ui/close.png', 24, 24);
+	    game.load.spritesheet('up', './assets/images/ui/up.png', 96, 96);
+	    game.load.spritesheet('down', './assets/images/ui/down.png', 96, 96);
 	    game.load.audio('bgmusic', './assets/audio/tension.mp3');
 	    game.load.audio('boom', './assets/audio/exploding.wav');
 	    game.load.audio('teleport', './assets/audio/teleport.wav');
