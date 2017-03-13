@@ -64,7 +64,7 @@ var Stage = {
 		    heightFloor = game.rnd.integerInRange(Math.max(1,lastFloor-1), Math.min(lastFloor+1, options.maxHeight));
 		}
 
-	    while((heightCeiling + heightFloor) > 19) {
+	    while((heightCeiling + heightFloor) > 17) {
 	        heightCeiling = heightCeiling - 1;
 	        heightFloor = heightFloor - 1;
 	    }
@@ -148,15 +148,23 @@ var Stage = {
 
 	createRock(game, tunnelGroup, x, y, callback, scope, options) {
 
-		let rock = tunnelGroup.create(x, y, 'rock');
+		var rock = game.add.sprite(x, y, 'rock');
+
+		rock.width = game.custom.gridWidth;
+		rock.height = parseInt(options.rockHeight * game.custom.scaleX, 10); // Need to work on the same scale as width
+		rock.smoothed = false;
+
+		tunnelGroup.add(rock);
 
 	    rock.checkWorldBounds = true;
 	    rock.body.immovable = true;
 
 	    // If the rock is inWorld, set it to be on stage.
 	    if(rock.inWorld === true) {
+	    	console.log(true);
 	    	rock.custom = {'onStage':true};
 	    } else {
+	    	console.log(false);
 	    	rock.custom = {'onStage':false};
 	    }
 	    
@@ -191,8 +199,8 @@ var Stage = {
 	   	options.ceiling = generatedTunnel.ceiling;
 	   	options.floor = generatedTunnel.floor;
 
-	    rock.x = (options.rockWidth * options.spritesPerRowPlusBuffer) + rock.x;
-	    rock.y = (lastCeiling * 12) - options.rockHeight;
+	    rock.x = (game.custom.gridWidth * options.gridXSections) + rock.x;
+	    rock.y = (lastCeiling * game.custom.gridHeight) - parseInt(options.rockHeight * game.custom.scaleX, 10); // Need to work on the same scale as width;
 
 	    // Set this back to false, when it 
 	    //enters the stage this it will be set to true
@@ -212,8 +220,8 @@ var Stage = {
 
 	    lastFloor = options.floor[options.floor.length-1];
 	    
-	    rock.x = (options.rockWidth * options.spritesPerRowPlusBuffer) + rock.x;
-	    rock.y = game.height - ((lastFloor + 1) * 12); 
+	    rock.x = (game.custom.gridWidth * options.gridXSections) + rock.x;
+	    rock.y = game.height - ((lastFloor + 1) * game.custom.gridHeight); 
 
 	    // Set this back to false, when it 
 	    //enters the stage this it will be set to true

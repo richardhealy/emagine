@@ -41,6 +41,7 @@ var Play = {
 
 		// Create player
 		this.player = Player.create(game, 'ship', 70, game.height/2);
+		//this.player.scale.set(game.custom.scaleX);
 
 		// Setup ceiling and floor obsticles
 		this.setupObsticles(game);

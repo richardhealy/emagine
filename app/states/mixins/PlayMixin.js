@@ -28,12 +28,13 @@ let PlayMixin = {
 
 		let i = 0;
 
-		for (i = 0; i < Features.spritesPerRowPlusBuffer; i++) {
-	        Stage.createRock(game, this.tunnel, parseInt(i * Features.rockWidth,10), (Features.ceiling[i] * 12) - Features.rockHeight, Stage.switchCeiling, this, Features);
+		for (i = 0; i < Features.gridXSections; i++) {
+	        Stage.createRock(game, this.tunnel, parseInt(i * game.custom.gridWidth, 10), (Features.ceiling[i] * game.custom.gridHeight) - parseInt(Features.rockHeight * game.custom.scaleX, 10), Stage.switchCeiling, this, Features);
 	    }
 
-	    for (i = 0; i < Features.spritesPerRowPlusBuffer; i++) {
-	        Stage.createRock(game, this.tunnel, parseInt(i * Features.rockWidth,10), game.height - ((Features.ceiling[i] + 1) * 12), Stage.switchFloor, this, Features);
+	    for (i = 0; i < Features.gridXSections; i++) {
+	    	console.log(parseInt(i * game.custom.gridWidth, 10));
+	        Stage.createRock(game, this.tunnel, parseInt(i * game.custom.gridWidth, 10), game.height - ((Features.ceiling[i] + 1) * game.custom.gridHeight), Stage.switchFloor, this, Features);
 	    }
 	},
 
@@ -109,8 +110,8 @@ let PlayMixin = {
     	this.camera.onFlashComplete.removeAll();
 
 		Features.speed = 1;
-		Features.ceiling = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,10,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
-    	Features.floor = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,10,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
+		Features.ceiling = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,8,8,8,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
+    	Features.floor = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,8,8,8,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
 
 	},
 

@@ -1,5 +1,4 @@
 import Game from './Game';
-//import ZPlat from './../helpers/scale';
 
 var app = {
 	initialize: function () {

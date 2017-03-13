@@ -4,6 +4,8 @@ import Load from './states/Load';
 import Menu from './states/Menu';
 import Play from './states/Play';
 import Credits from './states/Credits';
+import Features from './config/Features';
+import Utils from './../helpers/Utils';
 
 const Game = {
 	initialize: function (width, height, engine = Phaser.AUTO, callbacks = {
@@ -27,14 +29,23 @@ const Game = {
 
 		return game;
 	},
+	preload: function () {
+
+		let screenDims = Utils.ScreenUtils.calculateScreenMetrics(Features.originalGameWidth, Features.originalGameHeight, Utils.Orientation.LANDSCAPE);
+
+		this.game.custom = {};
+		this.game.custom.gridWidth = parseInt(Math.ceil(screenDims.windowWidth / Features.gridXSections), 10);
+		this.game.custom.gridHeight = parseInt(Math.ceil(screenDims.windowHeight / Features.gridYSections), 10);
+		this.game.custom.scaleX = screenDims.scaleX;
+		this.game.custom.scaleY = screenDims.scaleY;
+
+	},
 	create: function () {
 
 		this.game.plugins.add(PhaserInput.Plugin);
 
 		this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-		this.game.scale.aspectRatio = 0.5;
-		
 		this.game.state.add('preload', Preload.initialize(), false);
 		this.game.state.add('load', Load.initialize(), false);
 		this.game.state.add('menu', Menu.initialize(), false);

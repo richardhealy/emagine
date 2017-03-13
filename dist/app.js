@@ -77,8 +77,6 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	//import ZPlat from './../helpers/scale';
-	
 	var app = {
 		initialize: function initialize() {
 			this.start();
@@ -113,17 +111,25 @@
 	
 	var _Load2 = _interopRequireDefault(_Load);
 	
-	var _Menu = __webpack_require__(14);
+	var _Menu = __webpack_require__(16);
 	
 	var _Menu2 = _interopRequireDefault(_Menu);
 	
-	var _Play = __webpack_require__(16);
+	var _Play = __webpack_require__(18);
 	
 	var _Play2 = _interopRequireDefault(_Play);
 	
-	var _Credits = __webpack_require__(28);
+	var _Credits = __webpack_require__(29);
 	
 	var _Credits2 = _interopRequireDefault(_Credits);
+	
+	var _Features = __webpack_require__(14);
+	
+	var _Features2 = _interopRequireDefault(_Features);
+	
+	var _Utils = __webpack_require__(15);
+	
+	var _Utils2 = _interopRequireDefault(_Utils);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -151,13 +157,21 @@
 	
 			return game;
 		},
+		preload: function preload() {
+	
+			var screenDims = _Utils2.default.ScreenUtils.calculateScreenMetrics(_Features2.default.originalGameWidth, _Features2.default.originalGameHeight, _Utils2.default.Orientation.LANDSCAPE);
+	
+			this.game.custom = {};
+			this.game.custom.gridWidth = parseInt(Math.ceil(screenDims.windowWidth / _Features2.default.gridXSections), 10);
+			this.game.custom.gridHeight = parseInt(Math.ceil(screenDims.windowHeight / _Features2.default.gridYSections), 10);
+			this.game.custom.scaleX = screenDims.scaleX;
+			this.game.custom.scaleY = screenDims.scaleY;
+		},
 		create: function create() {
 	
 			this.game.plugins.add(PhaserInput.Plugin);
 	
 			this.game.physics.startSystem(_Phaser2.default.Physics.ARCADE);
-	
-			this.game.scale.aspectRatio = 0.5;
 	
 			this.game.state.add('preload', _Preload2.default.initialize(), false);
 			this.game.state.add('load', _Load2.default.initialize(), false);
@@ -321,6 +335,14 @@
 	
 	var _Phaser2 = _interopRequireDefault(_Phaser);
 	
+	var _Features = __webpack_require__(14);
+	
+	var _Features2 = _interopRequireDefault(_Features);
+	
+	var _Utils = __webpack_require__(15);
+	
+	var _Utils2 = _interopRequireDefault(_Utils);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var Load = {
@@ -343,25 +365,28 @@
 	
 			game.load.setPreloadSprite(loadingBar);
 	
-			game.load.image('bg', './assets/images/bg.png');
-			game.load.spritesheet('rock', './assets/images/block.png', 12, 500);
 			game.load.spritesheet('ship', './assets/images/ship.png', 40, 22, 3);
 			game.load.spritesheet('explosion', './assets/images/explosion.png', 128, 128);
-			game.load.spritesheet('titlescreen', './assets/images/ui/title.png', 1024, 600);
-			game.load.spritesheet('logo', './assets/images/ui/logo.png', 700, 131);
-			game.load.spritesheet('button', './assets/images/ui/check.png', 64, 64);
-			game.load.spritesheet('info', './assets/images/ui/info.png', 24, 24);
-			game.load.spritesheet('close', './assets/images/ui/close.png', 24, 24);
-			game.load.spritesheet('up', './assets/images/ui/up.png', 96, 96);
-			game.load.spritesheet('down', './assets/images/ui/down.png', 96, 96);
+			game.load.image('bg', './assets/images/bg.png');
+			game.load.image('rock', './assets/images/block.png');
+			game.load.image('titlescreen', './assets/images/ui/title.png');
+			game.load.image('logo', './assets/images/ui/logo.png');
+			game.load.image('button', './assets/images/ui/check.png');
+			game.load.image('info', './assets/images/ui/info.png');
+			game.load.image('close', './assets/images/ui/close.png');
+			game.load.image('up', './assets/images/ui/up.png');
+			game.load.image('down', './assets/images/ui/down.png');
 			game.load.audio('bgmusic', './assets/audio/tension.mp3');
 			game.load.audio('boom', './assets/audio/exploding.wav');
 			game.load.audio('teleport', './assets/audio/teleport.wav');
 			game.load.audio('boost', './assets/audio/rocket.wav');
 		},
 		create: function create(game) {
+	
+			var screenDims = _Utils2.default.ScreenUtils.calculateScreenMetrics(_Features2.default.originalGameWidth, _Features2.default.originalGameHeight, _Utils2.default.Orientation.LANDSCAPE);
+	
 			game.stage.backgroundColor = '#000000';
-			game.world.setBounds(0, 0, 900, 600);
+			game.world.setBounds(0, 0, parseInt(screenDims.windowWidth * 1.2, 10), screenDims.windowHeight);
 			game.physics.startSystem(_Phaser2.default.Physics.ARCADE);
 	
 			game.state.start('menu');
@@ -372,6 +397,149 @@
 
 /***/ },
 /* 14 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	   value: true
+	});
+	// NOTES
+	// There should be 68 rocks on screen width wise 12 x 68 = 864
+	// There should be height / 25 + 10 
+	
+	var Features = {
+	   originalGameWidth: 864,
+	   originalGameHeight: 600,
+	   speed: 1,
+	   maxHeight: 20,
+	   intervalIncrease: 5,
+	   playerSpeed: 6,
+	   usedStageRandomness: 1000,
+	   rockWidth: 12,
+	   rockHeight: 500,
+	   gridXSections: 68,
+	   gridYSections: 25,
+	   bgSpeed: 0.75,
+	   bufferCeiling: [],
+	   bufferFloor: [],
+	   ceiling: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 8, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+	   floor: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 8, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+	};
+	
+	exports.default = Features;
+
+/***/ },
+/* 15 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	var Utils;
+	(function (Utils) {
+	    var ScreenMetrics = function () {
+	        function ScreenMetrics() {}
+	        return ScreenMetrics;
+	    }();
+	    Utils.ScreenMetrics = ScreenMetrics;
+	    (function (Orientation) {
+	        Orientation[Orientation["PORTRAIT"] = 0] = "PORTRAIT";
+	        Orientation[Orientation["LANDSCAPE"] = 1] = "LANDSCAPE";
+	    })(Utils.Orientation || (Utils.Orientation = {}));
+	    var Orientation = Utils.Orientation;
+	    ;
+	    var ScreenUtils = function () {
+	        function ScreenUtils() {}
+	        // -------------------------------------------------------------------------
+	        ScreenUtils.calculateScreenMetrics = function (aDefaultWidth, aDefaultHeight, aOrientation, aMaxGameWidth, aMaxGameHeight) {
+	            if (aOrientation === void 0) {
+	                aOrientation = 1 /* LANDSCAPE */;
+	            }
+	            // get dimension of window
+	            var windowWidth = window.innerWidth;
+	            var windowHeight = window.innerHeight;
+	            // swap if window dimensions do not match orientation
+	            if (windowWidth < windowHeight && aOrientation === 1 /* LANDSCAPE */ || windowHeight < windowWidth && aOrientation === 0 /* PORTRAIT */) {
+	                var tmp = windowWidth;
+	                windowWidth = windowHeight;
+	                windowHeight = tmp;
+	            }
+	            // calculate max game dimension. The bounds are iPad and iPhone 
+	            if (typeof aMaxGameWidth === "undefined" || typeof aMaxGameHeight === "undefined") {
+	                if (aOrientation === 1 /* LANDSCAPE */) {
+	                        aMaxGameWidth = Math.round(aDefaultWidth * 1420 / 1280);
+	                        aMaxGameHeight = Math.round(aDefaultHeight * 960 / 800);
+	                    } else {
+	                    aMaxGameWidth = Math.round(aDefaultWidth * 960 / 800);
+	                    aMaxGameHeight = Math.round(aDefaultHeight * 1420 / 1280);
+	                }
+	            }
+	            // default aspect and current window aspect
+	            var defaultAspect = aOrientation === 1 /* LANDSCAPE */ ? 1280 / 800 : 800 / 1280;
+	            var windowAspect = windowWidth / windowHeight;
+	            var offsetX = 0;
+	            var offsetY = 0;
+	            var gameWidth = 0;
+	            var gameHeight = 0;
+	            // if (aOrientation === Orientation.LANDSCAPE) {
+	            // "iPhone" landscape ... and "iPad" portrait
+	            if (windowAspect > defaultAspect) {
+	                gameHeight = aDefaultHeight;
+	                gameWidth = Math.ceil(gameHeight * windowAspect / 2.0) * 2;
+	                gameWidth = Math.min(gameWidth, aMaxGameWidth);
+	                offsetX = (gameWidth - aDefaultWidth) / 2;
+	                offsetY = 0;
+	            } else {
+	                gameWidth = aDefaultWidth;
+	                gameHeight = Math.ceil(gameWidth / windowAspect / 2.0) * 2;
+	                gameHeight = Math.min(gameHeight, aMaxGameHeight);
+	                offsetX = 0;
+	                offsetY = (gameHeight - aDefaultHeight) / 2;
+	            }
+	            /* } else {    // "iPhone" portrait
+	                if (windowAspect < defaultAspect) {
+	                    gameWidth = aDefaultWidth;
+	                    gameHeight = gameWidth / windowAspect;
+	                    gameHeight = Math.min(gameHeight, aMaxGameHeight);
+	                    offsetX = 0;
+	                    offsetY = (gameHeight - aDefaultHeight) / 2;
+	                } else {    // "iPad" portrait
+	                    gameHeight = aDefaultHeight;
+	                    gameWidth = gameHeight = windowAspect;
+	                    gameWidth = Math.min(gameWidth, aMaxGameWidth);
+	                    offsetX = (gameWidth - aDefaultWidth) / 2;
+	                    offsetY = 0;
+	                }
+	            }
+	            */
+	            // calculate scale
+	            var scaleX = windowWidth / gameWidth;
+	            var scaleY = windowHeight / gameHeight;
+	            // store values
+	            this.screenMetrics = new ScreenMetrics();
+	            this.screenMetrics.windowWidth = windowWidth;
+	            this.screenMetrics.windowHeight = windowHeight;
+	            this.screenMetrics.defaultGameWidth = aDefaultWidth;
+	            this.screenMetrics.defaultGameHeight = aDefaultHeight;
+	            this.screenMetrics.maxGameWidth = aMaxGameWidth;
+	            this.screenMetrics.maxGameHeight = aMaxGameHeight;
+	            this.screenMetrics.gameWidth = gameWidth;
+	            this.screenMetrics.gameHeight = gameHeight;
+	            this.screenMetrics.scaleX = scaleX;
+	            this.screenMetrics.scaleY = scaleY;
+	            this.screenMetrics.offsetX = offsetX;
+	            this.screenMetrics.offsetY = offsetY;
+	            return this.screenMetrics;
+	        };
+	        return ScreenUtils;
+	    }();
+	    Utils.ScreenUtils = ScreenUtils;
+	})(Utils || (Utils = {}));
+	
+	module.exports = Utils;
+
+/***/ },
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -384,7 +552,7 @@
 	
 	var _Phaser2 = _interopRequireDefault(_Phaser);
 	
-	var _Score = __webpack_require__(15);
+	var _Score = __webpack_require__(17);
 	
 	var _Score2 = _interopRequireDefault(_Score);
 	
@@ -456,7 +624,7 @@
 	exports.default = Menu;
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -513,7 +681,7 @@
 	exports.default = Score;
 
 /***/ },
-/* 16 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -526,35 +694,35 @@
 	
 	var _Phaser2 = _interopRequireDefault(_Phaser);
 	
-	var _GameFactory = __webpack_require__(17);
+	var _GameFactory = __webpack_require__(19);
 	
 	var _GameFactory2 = _interopRequireDefault(_GameFactory);
 	
-	var _Features = __webpack_require__(19);
+	var _Features = __webpack_require__(14);
 	
 	var _Features2 = _interopRequireDefault(_Features);
 	
-	var _Stage = __webpack_require__(20);
+	var _Stage = __webpack_require__(21);
 	
 	var _Stage2 = _interopRequireDefault(_Stage);
 	
-	var _Player = __webpack_require__(22);
+	var _Player = __webpack_require__(23);
 	
 	var _Player2 = _interopRequireDefault(_Player);
 	
-	var _Score = __webpack_require__(15);
+	var _Score = __webpack_require__(17);
 	
 	var _Score2 = _interopRequireDefault(_Score);
 	
-	var _Controls = __webpack_require__(26);
+	var _Controls = __webpack_require__(27);
 	
 	var _Controls2 = _interopRequireDefault(_Controls);
 	
-	var _DeathParticles = __webpack_require__(24);
+	var _DeathParticles = __webpack_require__(25);
 	
 	var _DeathParticles2 = _interopRequireDefault(_DeathParticles);
 	
-	var _GameAudio = __webpack_require__(27);
+	var _GameAudio = __webpack_require__(28);
 	
 	var _GameAudio2 = _interopRequireDefault(_GameAudio);
 	
@@ -593,6 +761,7 @@
 	
 			// Create player
 			this.player = _Player2.default.create(game, 'ship', 70, game.height / 2);
+			//this.player.scale.set(game.custom.scaleX);
 	
 			// Setup ceiling and floor obsticles
 			this.setupObsticles(game);
@@ -652,7 +821,7 @@
 	exports.default = Play;
 
 /***/ },
-/* 17 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -661,7 +830,7 @@
 		value: true
 	});
 	
-	var _PlayMixin = __webpack_require__(18);
+	var _PlayMixin = __webpack_require__(20);
 	
 	var _PlayMixin2 = _interopRequireDefault(_PlayMixin);
 	
@@ -685,7 +854,7 @@
 	exports.default = GameFactory;
 
 /***/ },
-/* 18 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -694,31 +863,31 @@
 		value: true
 	});
 	
-	var _Features = __webpack_require__(19);
+	var _Features = __webpack_require__(14);
 	
 	var _Features2 = _interopRequireDefault(_Features);
 	
-	var _Stage = __webpack_require__(20);
+	var _Stage = __webpack_require__(21);
 	
 	var _Stage2 = _interopRequireDefault(_Stage);
 	
-	var _Player = __webpack_require__(22);
+	var _Player = __webpack_require__(23);
 	
 	var _Player2 = _interopRequireDefault(_Player);
 	
-	var _Explosion = __webpack_require__(23);
+	var _Explosion = __webpack_require__(24);
 	
 	var _Explosion2 = _interopRequireDefault(_Explosion);
 	
-	var _Score = __webpack_require__(15);
+	var _Score = __webpack_require__(17);
 	
 	var _Score2 = _interopRequireDefault(_Score);
 	
-	var _DeathParticles = __webpack_require__(24);
+	var _DeathParticles = __webpack_require__(25);
 	
 	var _DeathParticles2 = _interopRequireDefault(_DeathParticles);
 	
-	var _Effects = __webpack_require__(25);
+	var _Effects = __webpack_require__(26);
 	
 	var _Effects2 = _interopRequireDefault(_Effects);
 	
@@ -746,12 +915,13 @@
 	
 			var i = 0;
 	
-			for (i = 0; i < _Features2.default.spritesPerRowPlusBuffer; i++) {
-				_Stage2.default.createRock(game, this.tunnel, parseInt(i * _Features2.default.rockWidth, 10), _Features2.default.ceiling[i] * 12 - _Features2.default.rockHeight, _Stage2.default.switchCeiling, this, _Features2.default);
+			for (i = 0; i < _Features2.default.gridXSections; i++) {
+				_Stage2.default.createRock(game, this.tunnel, parseInt(i * game.custom.gridWidth, 10), _Features2.default.ceiling[i] * game.custom.gridHeight - parseInt(_Features2.default.rockHeight * game.custom.scaleX, 10), _Stage2.default.switchCeiling, this, _Features2.default);
 			}
 	
-			for (i = 0; i < _Features2.default.spritesPerRowPlusBuffer; i++) {
-				_Stage2.default.createRock(game, this.tunnel, parseInt(i * _Features2.default.rockWidth, 10), game.height - (_Features2.default.ceiling[i] + 1) * 12, _Stage2.default.switchFloor, this, _Features2.default);
+			for (i = 0; i < _Features2.default.gridXSections; i++) {
+				console.log(parseInt(i * game.custom.gridWidth, 10));
+				_Stage2.default.createRock(game, this.tunnel, parseInt(i * game.custom.gridWidth, 10), game.height - (_Features2.default.ceiling[i] + 1) * game.custom.gridHeight, _Stage2.default.switchFloor, this, _Features2.default);
 			}
 		},
 	
@@ -825,8 +995,8 @@
 			this.camera.onFlashComplete.removeAll();
 	
 			_Features2.default.speed = 1;
-			_Features2.default.ceiling = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-			_Features2.default.floor = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+			_Features2.default.ceiling = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 8, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+			_Features2.default.floor = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 8, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 		},
 	
 		death: function death(game) {
@@ -915,34 +1085,7 @@
 	exports.default = PlayMixin;
 
 /***/ },
-/* 19 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	   value: true
-	});
-	var Features = {
-	   speed: 1,
-	   maxHeight: 20,
-	   intervalIncrease: 5,
-	   playerSpeed: 6,
-	   rockWidth: 12,
-	   rockHeight: 500,
-	   spritesPerRowPlusBuffer: 68,
-	   usedStageRandomness: 1000,
-	   bgSpeed: 0.75,
-	   bufferCeiling: [],
-	   bufferFloor: [],
-	   ceiling: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-	   floor: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-	};
-	
-	exports.default = Features;
-
-/***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -951,7 +1094,7 @@
 		value: true
 	});
 	
-	var _Stages = __webpack_require__(21);
+	var _Stages = __webpack_require__(22);
 	
 	var _Stages2 = _interopRequireDefault(_Stages);
 	
@@ -1014,7 +1157,7 @@
 				heightFloor = game.rnd.integerInRange(Math.max(1, lastFloor - 1), Math.min(lastFloor + 1, options.maxHeight));
 			}
 	
-			while (heightCeiling + heightFloor > 19) {
+			while (heightCeiling + heightFloor > 17) {
 				heightCeiling = heightCeiling - 1;
 				heightFloor = heightFloor - 1;
 			}
@@ -1097,15 +1240,23 @@
 	
 		createRock: function createRock(game, tunnelGroup, x, y, callback, scope, options) {
 	
-			var rock = tunnelGroup.create(x, y, 'rock');
+			var rock = game.add.sprite(x, y, 'rock');
+	
+			rock.width = game.custom.gridWidth;
+			rock.height = parseInt(options.rockHeight * game.custom.scaleX, 10); // Need to work on the same scale as width
+			rock.smoothed = false;
+	
+			tunnelGroup.add(rock);
 	
 			rock.checkWorldBounds = true;
 			rock.body.immovable = true;
 	
 			// If the rock is inWorld, set it to be on stage.
 			if (rock.inWorld === true) {
+				console.log(true);
 				rock.custom = { 'onStage': true };
 			} else {
+				console.log(false);
 				rock.custom = { 'onStage': false };
 			}
 	
@@ -1139,8 +1290,8 @@
 			options.ceiling = generatedTunnel.ceiling;
 			options.floor = generatedTunnel.floor;
 	
-			rock.x = options.rockWidth * options.spritesPerRowPlusBuffer + rock.x;
-			rock.y = lastCeiling * 12 - options.rockHeight;
+			rock.x = game.custom.gridWidth * options.gridXSections + rock.x;
+			rock.y = lastCeiling * game.custom.gridHeight - parseInt(options.rockHeight * game.custom.scaleX, 10); // Need to work on the same scale as width;
 	
 			// Set this back to false, when it 
 			//enters the stage this it will be set to true
@@ -1159,8 +1310,8 @@
 	
 			lastFloor = options.floor[options.floor.length - 1];
 	
-			rock.x = options.rockWidth * options.spritesPerRowPlusBuffer + rock.x;
-			rock.y = game.height - (lastFloor + 1) * 12;
+			rock.x = game.custom.gridWidth * options.gridXSections + rock.x;
+			rock.y = game.height - (lastFloor + 1) * game.custom.gridHeight;
 	
 			// Set this back to false, when it 
 			//enters the stage this it will be set to true
@@ -1171,7 +1322,7 @@
 	exports.default = Stage;
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1230,7 +1381,7 @@
 	exports.default = Stages;
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1246,6 +1397,10 @@
 			    boostAnimation = null;
 	
 			player = game.add.sprite(0, 0, 'ship');
+			player.smoothed = false;
+	
+			player.width = parseInt(parseInt(player.width, 10) * game.custom.scaleX, 10);
+			player.height = parseInt(parseInt(player.height, 10) * game.custom.scaleX, 10);
 	
 			staticAnimation = player.animations.add('static', [0], 1, false);
 			boostAnimation = player.animations.add('boost', [1, 2], 10, true);
@@ -1286,7 +1441,7 @@
 	exports.default = Player;
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1323,7 +1478,7 @@
 	exports.default = Explosion;
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1379,7 +1534,7 @@
 	exports.default = DeathParticles;
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1415,7 +1570,7 @@
 	exports.default = Effects;
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1497,7 +1652,7 @@
 	exports.default = Controls;
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1527,7 +1682,7 @@
 	exports.default = GameAudio;
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
